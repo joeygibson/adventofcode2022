@@ -7,8 +7,16 @@ fi
 
 PROJECT_NAME="$1"
 
+if [[ -d "${PROJECT_NAME}" ]]; then
+  echo "${PROJECT_NAME} exists; pick another"
+  exit 1
+fi
+
 mkdir -p "${PROJECT_NAME}"/src/{main,test}/{java,resources}/com/joeygibson/aoc2022/"${PROJECT_NAME}"
 cp etc/pom.xml "${PROJECT_NAME}"/
+
+cat etc/Main.kt | sed -e "s/XXX/${PROJECT_NAME}/g" > "${PROJECT_NAME}"/src/main/java/com/joeygibson/aoc2022/"${PROJECT_NAME}"/Main.kt
+cat etc/Cli.kt | sed -e "s/XXX/${PROJECT_NAME}/g" > "${PROJECT_NAME}"/src/main/java/com/joeygibson/aoc2022/"${PROJECT_NAME}"/Cli.kt
 
 echo "Done."
 tree "${PROJECT_NAME}"
