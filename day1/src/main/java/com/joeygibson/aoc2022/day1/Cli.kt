@@ -22,22 +22,20 @@ class Cli : Callable<Int> {
         files?.forEach { file ->
             val lines = Files.readAllLines(file.toPath())
 
-            val elvesCalories = lines.fold(mutableListOf(0)) { acc, line ->
+            val calories = lines.fold(mutableListOf(0)) { acc, line ->
                 if (line.isNotBlank()) {
-                    val lastIndex = acc.size - 1
-                    var last = acc[lastIndex]
-                    last += line.toInt()
-                    acc[lastIndex] = last
+                    val last = acc.removeLastOrNull() ?: 0
+                    acc.add(last + line.toInt())
                 } else {
                     acc.add(0)
                 }
 
                 acc
             }
-            
-            println("part1: ${elvesCalories.max()}")
 
-            val topThreeTotal = elvesCalories.sortedDescending()
+            println("part1: ${calories.max()}")
+
+            val topThreeTotal = calories.sortedDescending()
                 .take(3)
                 .sum()
 
