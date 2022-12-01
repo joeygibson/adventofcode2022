@@ -5,10 +5,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.cisco.tdr</groupId>
-    <artifactId>jsontoparquet</artifactId>
+    <artifactId>XXX</artifactId>
     <version>1.0-SNAPSHOT</version>
 
-    <name>jsontoparquet</name>
+    <name>XXX</name>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
