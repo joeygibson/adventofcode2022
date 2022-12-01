@@ -6,6 +6,8 @@ if [[ "$1" == "" ]]; then
 fi
 
 PROJECT_NAME="$1"
+TEMPLATE_DIR=template
+TEMPLATE_SRC_PATH=${TEMPLATE_DIR}/src/main/java/com/joeygibson/aoc2022/XXX
 
 if [[ -d "${PROJECT_NAME}" ]]; then
   echo "${PROJECT_NAME} exists; pick another"
@@ -16,9 +18,10 @@ mkdir -p "${PROJECT_NAME}"/src/{main,test}/{java,resources}/com/joeygibson/aoc20
 mkdir -p "${PROJECT_NAME}"/bin
 cp bin/run "${PROJECT_NAME}"/bin/
 
-cat etc/Main.kt | sed -e "s/XXX/${PROJECT_NAME}/g" > "${PROJECT_NAME}"/src/main/java/com/joeygibson/aoc2022/"${PROJECT_NAME}"/Main.kt
-cat etc/Cli.kt | sed -e "s/XXX/${PROJECT_NAME}/g" > "${PROJECT_NAME}"/src/main/java/com/joeygibson/aoc2022/"${PROJECT_NAME}"/Cli.kt
-cat etc/pom.xml | sed -e "s/XXX/${PROJECT_NAME}/g" > "${PROJECT_NAME}"/pom.xml
+cat ${TEMPLATE_SRC_PATH}/Main.kt | sed -e "s/XXX/${PROJECT_NAME}/g" > "${PROJECT_NAME}"/src/main/java/com/joeygibson/aoc2022/"${PROJECT_NAME}"/Main.kt
+cat ${TEMPLATE_SRC_PATH}/App.kt | sed -e "s/XXX/${PROJECT_NAME}/g" > "${PROJECT_NAME}"/src/main/java/com/joeygibson/aoc2022/"${PROJECT_NAME}"/App.kt
+cat ${TEMPLATE_SRC_PATH}/Util.kt | sed -e "s/XXX/${PROJECT_NAME}/g" > "${PROJECT_NAME}"/src/main/java/com/joeygibson/aoc2022/"${PROJECT_NAME}"/Util.kt
+cat ${TEMPLATE_DIR}/pom.xml | sed -e "s/XXX/${PROJECT_NAME}/g" > "${PROJECT_NAME}"/pom.xml
 
 echo "Done."
 tree "${PROJECT_NAME}"

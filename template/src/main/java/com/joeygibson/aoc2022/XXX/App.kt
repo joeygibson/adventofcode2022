@@ -5,6 +5,7 @@ import picocli.CommandLine
 import java.io.File
 import java.io.IOException
 import java.util.concurrent.Callable
+import kotlin.system.exitProcess
 
 @CommandLine.Command(
     name = "XXX",
@@ -14,11 +15,16 @@ import java.util.concurrent.Callable
 )
 class App : Callable<Int> {
     @CommandLine.Parameters(index = "0", description = ["The file to process"])
-    var file: File? = null
+    val file: File? = null
 
     @Throws(IOException::class)
     override fun call(): Int {
-		val fileName = file?.canonicalPath
+        if (file == null) {
+            println("Usage: XXX <input file>")
+            exitProcess(1)
+        }
+
+        val lines = readInput(file)
 
         return 0
     }
