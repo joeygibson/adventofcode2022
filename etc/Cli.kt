@@ -12,22 +12,20 @@ import java.util.concurrent.Callable
     version = ["XXX 1.0.0"],
     description = ["AoC 2022 XXX"]
 )
-class Cli : Callable<Int> {
-    @CommandLine.Parameters(index = "0..*", description = ["The file(s) to process"])
-    var files: Array<File>? = null
+class App : Callable<Int> {
+    @CommandLine.Parameters(index = "0", description = ["The file to process"])
+    var file: File? = null
 
     @Throws(IOException::class)
     override fun call(): Int {
-        files?.forEach { file ->
-            val fileName = file.canonicalPath
-        }
+		val fileName = file?.canonicalPath
 
         return 0
     }
 
     companion object {
         private val logger = LogManager.getLogger(
-            Cli::class.java
+            App::class.java
         )
     }
 }
