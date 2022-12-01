@@ -38,7 +38,13 @@ class Cli : Callable<Int> {
                 }
             }
 
-            println(elvesCalories.max())
+            println("part1: ${elvesCalories.max()}")
+
+            val topThreeTotal = elvesCalories.sortedDescending()
+                .take(3)
+                .sum()
+
+            println("part2: $topThreeTotal")
         }
 
         return 0
