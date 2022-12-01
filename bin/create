@@ -13,6 +13,8 @@ if [[ -d "${PROJECT_NAME}" ]]; then
 fi
 
 mkdir -p "${PROJECT_NAME}"/src/{main,test}/{java,resources}/com/joeygibson/aoc2022/"${PROJECT_NAME}"
+mkdir -p "${PROJECT_NAME}"/bin
+cp bin/run "${PROJECT_NAME}"/bin/
 
 cat etc/Main.kt | sed -e "s/XXX/${PROJECT_NAME}/g" > "${PROJECT_NAME}"/src/main/java/com/joeygibson/aoc2022/"${PROJECT_NAME}"/Main.kt
 cat etc/Cli.kt | sed -e "s/XXX/${PROJECT_NAME}/g" > "${PROJECT_NAME}"/src/main/java/com/joeygibson/aoc2022/"${PROJECT_NAME}"/Cli.kt
