@@ -2,9 +2,9 @@ package com.joeygibson.aoc2022.day1
 
 import org.apache.logging.log4j.LogManager
 import picocli.CommandLine
-import java.io.BufferedReader
 import java.io.File
 import java.io.IOException
+import java.nio.file.Files
 import java.util.concurrent.Callable
 
 @CommandLine.Command(
@@ -20,24 +20,21 @@ class Cli : Callable<Int> {
     @Throws(IOException::class)
     override fun call(): Int {
         files?.forEach { file ->
-            val fileName = file.canonicalPath
+            val lines = Files.readAllLines(file.toPath())
 
-            val elvesCalories = mutableListOf<Int>()
-            val calories = mutableListOf<Int>()
-
-            BufferedReader(file.reader()).useLines { lines ->
-                lines.forEach { line ->
-                    if (line.isBlank()) {
-                        if (!calories.isEmpty()) {
-                            elvesCalories.add(calories.sum())
-                            calories.clear()
-                        }
-                    } else {
-                        calories.add(line.toInt())
-                    }
+            val elvesCalories = lines.fold(mutableListOf(0)) { acc, line ->
+                if (line.isNotBlank()) {
+                    val lastIndex = acc.size - 1
+                    var last = acc[lastIndex]
+                    last += line.toInt()
+                    acc[lastIndex] = last
+                } else {
+                    acc.add(0)
                 }
-            }
 
+                acc
+            }
+            
             println("part1: ${elvesCalories.max()}")
 
             val topThreeTotal = elvesCalories.sortedDescending()
