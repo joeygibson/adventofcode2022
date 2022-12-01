@@ -16,7 +16,8 @@ fi
 
 mkdir -p "${PROJECT_NAME}"/src/{main,test}/{java,resources}/com/joeygibson/aoc2022/"${PROJECT_NAME}"
 mkdir -p "${PROJECT_NAME}"/bin
-cp bin/run "${PROJECT_NAME}"/bin/
+
+cp template/bin/run "${PROJECT_NAME}"/bin/
 
 cat ${TEMPLATE_SRC_PATH}/Main.kt | sed -e "s/XXX/${PROJECT_NAME}/g" > "${PROJECT_NAME}"/src/main/java/com/joeygibson/aoc2022/"${PROJECT_NAME}"/Main.kt
 cat ${TEMPLATE_SRC_PATH}/App.kt | sed -e "s/XXX/${PROJECT_NAME}/g" > "${PROJECT_NAME}"/src/main/java/com/joeygibson/aoc2022/"${PROJECT_NAME}"/App.kt
