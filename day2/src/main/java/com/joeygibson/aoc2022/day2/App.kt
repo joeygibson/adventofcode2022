@@ -6,6 +6,8 @@ import java.io.IOException
 import java.util.concurrent.Callable
 import kotlin.system.exitProcess
 
+private const val BAD_MOVE = "bad move"
+
 @CommandLine.Command(
     name = "day2",
     mixinStandardHelpOptions = true,
@@ -23,7 +25,16 @@ class App : Callable<Int> {
             exitProcess(1)
         }
 
-        val scores = readInput(file)
+        val rounds = readInput(file)
+
+        println("part1: ${part1(rounds)}")
+        println("part2: ${part2(rounds)}")
+
+        return 0
+    }
+
+    private fun part1(rounds: List<String>): Int {
+        val scores = rounds
             .filter { it.isNotBlank() }
             .map {
                 when (it) {
@@ -40,10 +51,53 @@ class App : Callable<Int> {
                 }
             }
 
-        val score = scores.sum()
+        return scores.sum()
+    }
 
-        println("part1: $score")
+    private fun part2(rounds: List<String>): Int {
+        val fixedRounds = rounds
+            .filter { it.isNotBlank() }
+            .map { it.split(" ") }
+            .map {
+                val (him, me) = it
 
-        return 0
+                val myMove = when (me) {
+                    "X" -> lose(him)
+                    "Y" -> draw(him)
+                    "Z" -> win(him)
+                    else -> throw Exception(BAD_MOVE)
+                }
+
+                "$him $myMove"
+            }
+
+        return part1(fixedRounds)
+    }
+
+    private fun win(him: String): String {
+        return when (him) {
+            "A" -> "Y"
+            "B" -> "Z"
+            "C" -> "X"
+            else -> throw Exception(BAD_MOVE)
+        }
+    }
+
+    private fun lose(him: String): String {
+        return when (him) {
+            "A" -> "Z"
+            "B" -> "X"
+            "C" -> "Y"
+            else -> throw Exception(BAD_MOVE)
+        }
+    }
+
+    private fun draw(him: String): String {
+        return when (him) {
+            "A" -> "X"
+            "B" -> "Y"
+            "C" -> "Z"
+            else -> throw Exception(BAD_MOVE)
+        }
     }
 }
