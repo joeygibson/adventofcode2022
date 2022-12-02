@@ -1,6 +1,5 @@
 package com.joeygibson.aoc2022.XXX
 
-import org.apache.logging.log4j.LogManager
 import picocli.CommandLine
 import java.io.File
 import java.io.IOException
@@ -27,11 +26,5 @@ class App : Callable<Int> {
         val lines = readInput(file)
 
         return 0
-    }
-
-    companion object {
-        private val logger = LogManager.getLogger(
-            App::class.java
-        )
     }
 }
