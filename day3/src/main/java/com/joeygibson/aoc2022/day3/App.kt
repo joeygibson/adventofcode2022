@@ -40,22 +40,14 @@ class App : Callable<Int> {
         lowerWeights: Map<Char, Int>
     ): Int {
         return lines
-            .filter { it.isNotBlank() }
             .map {
                 it.chunked(it.length / 2)
             }
             .flatMap {
-                val (side0, side1) = it
-                side0.filter { item -> side1.contains(item) }.toList().distinct()
+                it[0].toList().intersect(it[1].toList().toSet())
+            }.sumOf {
+                getPriority(it, upperWeights, lowerWeights)
             }
-            .map {
-                if (it.isUpperCase()) {
-                    upperWeights.getOrDefault(it, 0)
-                } else {
-                    lowerWeights.getOrDefault(it, 0)
-                }
-            }
-            .sum()
     }
 
     private fun part2(
@@ -67,14 +59,19 @@ class App : Callable<Int> {
             .chunked(3)
             .flatMap {
                 it[0].toList().intersect(it[1].toList().toSet()).intersect(it[2].toList().toSet())
+            }.sumOf {
+                getPriority(it, upperWeights, lowerWeights)
             }
-            .map {
-                if (it.isUpperCase()) {
-                    upperWeights.getOrDefault(it, 0)
-                } else {
-                    lowerWeights.getOrDefault(it, 0)
-                }
-            }
-            .sum()
     }
+
+    private fun getPriority(
+        item: Char,
+        upperWeights: Map<Char, Int>,
+        lowerWeights: Map<Char, Int>
+    ) = if (item.isUpperCase()) {
+        upperWeights.getOrDefault(item, 0)
+    } else {
+        lowerWeights.getOrDefault(item, 0)
+    }
+
 }
