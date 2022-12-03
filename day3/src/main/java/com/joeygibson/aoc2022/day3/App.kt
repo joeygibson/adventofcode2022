@@ -26,9 +26,20 @@ class App : Callable<Int> {
         val lowerWeights = ('a'..'z').zip(1..26).toMap()
         val upperWeights = ('A'..'Z').zip(27..52).toMap()
 
-        val lines = readInput(file)
+        val lines = readWithoutBlanks(file)
 
-        val part1 = lines
+        println(part1(lines, upperWeights, lowerWeights))
+        println(part2(lines, upperWeights, lowerWeights))
+
+        return 0
+    }
+
+    private fun part1(
+        lines: List<String>,
+        upperWeights: Map<Char, Int>,
+        lowerWeights: Map<Char, Int>
+    ): Int {
+        return lines
             .filter { it.isNotBlank() }
             .map {
                 it.chunked(it.length / 2)
@@ -45,9 +56,25 @@ class App : Callable<Int> {
                 }
             }
             .sum()
+    }
 
-        println(part1)
-
-        return 0
+    private fun part2(
+        lines: List<String>,
+        upperWeights: Map<Char, Int>,
+        lowerWeights: Map<Char, Int>
+    ): Int {
+        return lines
+            .chunked(3)
+            .flatMap {
+                it[0].toList().intersect(it[1].toList().toSet()).intersect(it[2].toList().toSet())
+            }
+            .map {
+                if (it.isUpperCase()) {
+                    upperWeights.getOrDefault(it, 0)
+                } else {
+                    lowerWeights.getOrDefault(it, 0)
+                }
+            }
+            .sum()
     }
 }
