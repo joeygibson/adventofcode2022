@@ -28,8 +28,8 @@ class App : Callable<Int> {
 
         val lines = readWithoutBlanks(file)
 
-        println(part1(lines, upperWeights, lowerWeights))
-        println(part2(lines, upperWeights, lowerWeights))
+        printResults("part1", part1(lines, upperWeights, lowerWeights))
+        printResults("part2", part2(lines, upperWeights, lowerWeights))
 
         return 0
     }
@@ -38,31 +38,27 @@ class App : Callable<Int> {
         lines: List<String>,
         upperWeights: Map<Char, Int>,
         lowerWeights: Map<Char, Int>
-    ): Int {
-        return lines
-            .map {
-                it.chunked(it.length / 2)
-            }
-            .flatMap {
-                it[0].toList().intersect(it[1].toList().toSet())
-            }.sumOf {
-                getPriority(it, upperWeights, lowerWeights)
-            }
-    }
+    ) = lines
+        .map {
+            it.chunked(it.length / 2)
+        }
+        .flatMap {
+            it[0].toList().intersect(it[1].toList().toSet())
+        }.sumOf {
+            getPriority(it, upperWeights, lowerWeights)
+        }
 
     private fun part2(
         lines: List<String>,
         upperWeights: Map<Char, Int>,
         lowerWeights: Map<Char, Int>
-    ): Int {
-        return lines
-            .chunked(3)
-            .flatMap {
-                it[0].toList().intersect(it[1].toList().toSet()).intersect(it[2].toList().toSet())
-            }.sumOf {
-                getPriority(it, upperWeights, lowerWeights)
-            }
-    }
+    ) = lines
+        .chunked(3)
+        .flatMap {
+            it[0].toList().intersect(it[1].toList().toSet()).intersect(it[2].toList().toSet())
+        }.sumOf {
+            getPriority(it, upperWeights, lowerWeights)
+        }
 
     private fun getPriority(
         item: Char,
@@ -73,5 +69,4 @@ class App : Callable<Int> {
     } else {
         lowerWeights.getOrDefault(item, 0)
     }
-
 }
