@@ -16,31 +16,27 @@ class App : Callable<Int> {
     @CommandLine.Parameters(index = "0", description = ["The file to process"])
     val file: File? = null
 
-    private fun part1(lines: List<String>): Any {
+    private fun solve(lines: List<String>, solver: (Int, Int, Int, Int) -> Boolean): Int {
         return lines
             .map { it.split(",") }
             .count {
                 val (aStart, aEnd) = it[0].split("-").map(String::toInt)
                 val (bStart, bEnd) = it[1].split("-").map(String::toInt)
 
-                (bStart >= aStart && bEnd <= aEnd) ||
-                        (aStart >= bStart && aEnd <= bEnd)
+                solver(aStart, aEnd, bStart, bEnd)
             }
     }
 
-    private fun part2(lines: List<String>): Any {
-        return lines
-            .map { it.split(",") }
-            .count {
-                val (aStart, aEnd) = it[0].split("-").map(String::toInt)
-                val (bStart, bEnd) = it[1].split("-").map(String::toInt)
+    private fun solvePart1(aStart: Int, aEnd: Int, bStart: Int, bEnd: Int): Boolean =
+        (bStart >= aStart && bEnd <= aEnd) ||
+                (aStart >= bStart && aEnd <= bEnd)
 
-                val aRange = (aStart..aEnd)
-                val bRange = (bStart..bEnd)
+    private fun solvePart2(aStart: Int, aEnd: Int, bStart: Int, bEnd: Int): Boolean {
+        val aRange = (aStart..aEnd)
+        val bRange = (bStart..bEnd)
 
-                aRange.contains(bStart) || aRange.contains(bEnd) ||
-                        bRange.contains(aStart) || bRange.contains(aEnd)
-            }
+        return aRange.contains(bStart) || aRange.contains(bEnd) ||
+                bRange.contains(aStart) || bRange.contains(aEnd)
     }
 
     @Throws(IOException::class)
@@ -52,8 +48,8 @@ class App : Callable<Int> {
 
         val lines = readWithoutBlanks(file)
 
-        printResults("part1", part1(lines))
-        printResults("part2", part2(lines))
+        printResults("part1", solve(lines, ::solvePart1))
+        printResults("part2", solve(lines, ::solvePart2))
 
         return 0
     }
