@@ -16,28 +16,27 @@ class App : Callable<Int> {
     @CommandLine.Parameters(index = "0", description = ["The file to process"])
     val file: File? = null
 
-    private fun solve(lines: List<String>, solver: (Int, Int, Int, Int) -> Boolean): Int {
+    private fun solve(lines: List<String>, solver: (Set<Int>, Set<Int>) -> Boolean): Int {
         return lines
             .map { it.split(",") }
             .count {
                 val (aStart, aEnd) = it[0].split("-").map(String::toInt)
                 val (bStart, bEnd) = it[1].split("-").map(String::toInt)
+                val aRange = (aStart..aEnd).toSet()
+                val bRange = (bStart..bEnd).toSet()
 
-                solver(aStart, aEnd, bStart, bEnd)
+                solver(aRange, bRange)
             }
     }
 
-    private fun solvePart1(aStart: Int, aEnd: Int, bStart: Int, bEnd: Int): Boolean =
-        (bStart >= aStart && bEnd <= aEnd) ||
-                (aStart >= bStart && aEnd <= bEnd)
+    private fun solvePart1(aRange: Set<Int>, bRange: Set<Int>): Boolean =
+        aRange.containsAll(bRange) || bRange.containsAll(aRange)
 
-    private fun solvePart2(aStart: Int, aEnd: Int, bStart: Int, bEnd: Int): Boolean {
-        val aRange = (aStart..aEnd)
-        val bRange = (bStart..bEnd)
+    private fun solvePart2(aRange: Set<Int>, bRange: Set<Int>): Boolean =
+        aRange
+            .intersect(bRange)
+            .isNotEmpty()
 
-        return aRange.contains(bStart) || aRange.contains(bEnd) ||
-                bRange.contains(aStart) || bRange.contains(aEnd)
-    }
 
     @Throws(IOException::class)
     override fun call(): Int {
