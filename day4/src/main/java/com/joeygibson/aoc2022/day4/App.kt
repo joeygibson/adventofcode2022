@@ -29,7 +29,18 @@ class App : Callable<Int> {
     }
 
     private fun part2(lines: List<String>): Any {
-        TODO()
+        return lines
+            .map { it.split(",") }
+            .count {
+                val (aStart, aEnd) = it[0].split("-").map(String::toInt)
+                val (bStart, bEnd) = it[1].split("-").map(String::toInt)
+
+                val aRange = (aStart..aEnd)
+                val bRange = (bStart..bEnd)
+
+                aRange.contains(bStart) || aRange.contains(bEnd) ||
+                        bRange.contains(aStart) || bRange.contains(aEnd)
+            }
     }
 
     @Throws(IOException::class)
@@ -42,7 +53,7 @@ class App : Callable<Int> {
         val lines = readWithoutBlanks(file)
 
         printResults("part1", part1(lines))
-//        printResults("part2", part2(lines))
+        printResults("part2", part2(lines))
 
         return 0
     }
