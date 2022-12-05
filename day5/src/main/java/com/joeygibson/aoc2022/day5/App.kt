@@ -16,6 +16,8 @@ class App : Callable<Int> {
     @CommandLine.Parameters(index = "0", description = ["The file to process"])
     val file: File? = null
 
+    private val moveRegex = """move (\d+) from (\d+) to (\d+)""".toRegex()
+
     @Throws(IOException::class)
     override fun call(): Int {
         if (file == null) {
@@ -26,12 +28,12 @@ class App : Callable<Int> {
         val lines = readInput(file)
 
         printResults("part1", part1(lines))
+        printResults("part2", part2(lines))
 
         return 0
     }
 
-    fun part1(lines: List<String>): String {
-        val moveRegex = """move (\d+) from (\d+) to (\d+)""".toRegex()
+    private fun part1(lines: List<String>): String {
         val stackLines = lines.takeWhile { it.isNotBlank() }
 
         val moves = lines.drop(stackLines.size + 1)
@@ -51,9 +53,31 @@ class App : Callable<Int> {
         }
 
         return stacks
-            .values
-            .map { it.last() }
-            .joinToString("")
+            .values.joinToString("") { it.last() }
+    }
+
+    private fun part2(lines: List<String>): String {
+        val stackLines = lines.takeWhile { it.isNotBlank() }
+
+        val moves = lines.drop(stackLines.size + 1)
+
+        val stacks: MutableMap<Int, MutableList<String>> = buildStacks(stackLines)
+
+        moves.forEach { move ->
+            moveRegex.find(move)?.let { match ->
+                val (num, src, dest) = match.destructured.toList().map(String::toInt)
+
+                val crates = stacks[src]?.takeLast(num)?.toList() ?: listOf()
+                stacks[dest]?.addAll(crates)
+
+                repeat(num) {
+                    stacks[src]?.removeLast()
+                }
+            }
+        }
+
+        return stacks
+            .values.joinToString("") { it.last() }
     }
 
     private fun buildStacks(lines: List<String>): MutableMap<Int, MutableList<String>> {
