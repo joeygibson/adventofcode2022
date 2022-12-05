@@ -27,27 +27,33 @@ class App : Callable<Int> {
 
         val lines = readInput(file)
 
-        printResults("part1", part1(lines))
-        printResults("part2", part2(lines))
+        printResults("part1", moveCrates(lines, ::part1))
+        printResults("part2", moveCrates(lines, ::part2))
 
         return 0
     }
 
-    private fun part1(lines: List<String>): String {
+    private fun moveCrates(
+        lines: List<String>,
+        mover: (MutableMap<Int, MutableList<String>>, List<String>) -> String
+    ): String {
         val stackLines = lines.takeWhile { it.isNotBlank() }
-
         val moves = lines.drop(stackLines.size + 1)
-
         val stacks: MutableMap<Int, MutableList<String>> = buildStacks(stackLines)
 
+        return mover(stacks, moves)
+    }
+
+    private fun part1(stacks: MutableMap<Int, MutableList<String>>, moves: List<String>): String {
         moves.forEach { move ->
             moveRegex.find(move)?.let { match ->
-                val (num, src, dest) = match.destructured.toList().map { it.toInt() }
+                val (num, src, dest) = match.destructured.toList().map(String::toInt)
 
                 repeat(num) {
-                    val crate: String = stacks[src]?.last() ?: "empty"
-                    stacks[dest]?.add(crate)
-                    stacks[src]?.removeLast()
+                    stacks[src]?.last()?.let { crate ->
+                        stacks[dest]?.add(crate)
+                        stacks[src]?.removeLast()
+                    }
                 }
             }
         }
@@ -56,22 +62,17 @@ class App : Callable<Int> {
             .values.joinToString("") { it.last() }
     }
 
-    private fun part2(lines: List<String>): String {
-        val stackLines = lines.takeWhile { it.isNotBlank() }
-
-        val moves = lines.drop(stackLines.size + 1)
-
-        val stacks: MutableMap<Int, MutableList<String>> = buildStacks(stackLines)
-
+    private fun part2(stacks: MutableMap<Int, MutableList<String>>, moves: List<String>): String {
         moves.forEach { move ->
             moveRegex.find(move)?.let { match ->
                 val (num, src, dest) = match.destructured.toList().map(String::toInt)
 
-                val crates = stacks[src]?.takeLast(num)?.toList() ?: listOf()
-                stacks[dest]?.addAll(crates)
+                stacks[src]?.takeLast(num)?.let { crates ->
+                    stacks[dest]?.addAll(crates)
 
-                repeat(num) {
-                    stacks[src]?.removeLast()
+                    repeat(num) {
+                        stacks[src]?.removeLast()
+                    }
                 }
             }
         }
