@@ -36,35 +36,33 @@ class App : Callable<Int> {
 
         val moves = lines.drop(stackLines.size + 1)
 
-        val stacks: Map<Int, List<String>> = buildStacks(stackLines)
+        val stacks: MutableMap<Int, MutableList<String>> = buildStacks(stackLines)
 
         moves.forEach { move ->
             moveRegex.find(move)?.let { match ->
-                val (num, from, to) = match.destructured
+                val (num, src, dest) = match.destructured.toList().map { it.toInt() }
 
-                num.forEach {
-                    val crate = stacks[from.toInt()]?.last()
-                    stacks[to.toInt()]?.let { stack ->
-                        stack.add
-                    }
-//                    stacks[to.toInt()]?.add(crate)
-//                    stacks[from.toInt()]?.dropLast(1)
+                repeat(num) {
+                    val crate: String = stacks[src]?.last() ?: "empty"
+                    stacks[dest]?.add(crate)
+                    stacks[src]?.removeLast()
                 }
             }
         }
 
-
-
-        return "foo"
+        return stacks
+            .values
+            .map { it.last() }
+            .joinToString("")
     }
 
-    fun buildStacks(lines: List<String>): Map<Int, List<String>> {
+    private fun buildStacks(lines: List<String>): MutableMap<Int, MutableList<String>> {
         val keys = lines.last()
             .trim()
             .split("""\s+""".toRegex())
             .map { it.toInt() }
 
-        val stacks = keys.associateWith { ArrayList<String>() }
+        val stacks = keys.associateWith { mutableListOf<String>() }.toMutableMap()
 
         lines.dropLast(1).reversed()
             .forEach {
