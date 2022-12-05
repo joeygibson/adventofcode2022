@@ -35,26 +35,16 @@ class App : Callable<Int> {
 
     private fun moveCrates(
         lines: List<String>,
-        mover: (MutableMap<Int, MutableList<String>>, List<String>) -> String
+        mover: (MutableMap<Int, MutableList<String>>, Int, Int, Int) -> Unit
     ): String {
-        val stackLines = lines.takeWhile { it.isNotBlank() }
-        val moves = lines.drop(stackLines.size + 1)
+        val (stackLines, moves) = lines.splitOn(String::isNotBlank)
         val stacks: MutableMap<Int, MutableList<String>> = buildStacks(stackLines)
 
-        return mover(stacks, moves)
-    }
-
-    private fun part1(stacks: MutableMap<Int, MutableList<String>>, moves: List<String>): String {
         moves.forEach { move ->
             moveRegex.find(move)?.let { match ->
                 val (num, src, dest) = match.destructured.toList().map(String::toInt)
 
-                repeat(num) {
-                    stacks[src]?.last()?.let { crate ->
-                        stacks[dest]?.add(crate)
-                        stacks[src]?.removeLast()
-                    }
-                }
+                mover(stacks, num, src, dest)
             }
         }
 
@@ -62,23 +52,23 @@ class App : Callable<Int> {
             .values.joinToString("") { it.last() }
     }
 
-    private fun part2(stacks: MutableMap<Int, MutableList<String>>, moves: List<String>): String {
-        moves.forEach { move ->
-            moveRegex.find(move)?.let { match ->
-                val (num, src, dest) = match.destructured.toList().map(String::toInt)
-
-                stacks[src]?.takeLast(num)?.let { crates ->
-                    stacks[dest]?.addAll(crates)
-
-                    repeat(num) {
-                        stacks[src]?.removeLast()
-                    }
-                }
+    private fun part1(stacks: MutableMap<Int, MutableList<String>>, num: Int, src: Int, dest: Int) {
+        repeat(num) {
+            stacks[src]?.last()?.let { crate ->
+                stacks[dest]?.add(crate)
+                stacks[src]?.removeLast()
             }
         }
+    }
 
-        return stacks
-            .values.joinToString("") { it.last() }
+    private fun part2(stacks: MutableMap<Int, MutableList<String>>, num: Int, src: Int, dest: Int) {
+        stacks[src]?.takeLast(num)?.let { crates ->
+            stacks[dest]?.addAll(crates)
+
+            repeat(num) {
+                stacks[src]?.removeLast()
+            }
+        }
     }
 
     private fun buildStacks(lines: List<String>): MutableMap<Int, MutableList<String>> {
@@ -89,7 +79,8 @@ class App : Callable<Int> {
 
         val stacks = keys.associateWith { mutableListOf<String>() }.toMutableMap()
 
-        lines.dropLast(1).reversed()
+        lines.dropLast(1)
+            .reversed()
             .forEach {
                 val crates = it.chunked(4)
 
