@@ -44,8 +44,7 @@ class App : Callable<Int> {
         .toList()
         .windowed(significantChars)
         .withIndex()
-        .filter { (index, item) ->
+        .first { (_, item) ->
             item.toSet().size == significantChars
-        }
-        .take(1)[0].index + significantChars
+        }.index + significantChars
 }
