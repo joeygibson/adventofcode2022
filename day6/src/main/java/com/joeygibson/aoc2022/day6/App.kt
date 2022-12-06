@@ -39,35 +39,13 @@ class App : Callable<Int> {
         return processMessage(line, 14)
     }
 
-    private fun processMessage(line: String, significantChars: Int): Int {
-        var count = 0
-        var marker = mutableListOf<String>()
-
-        for (ch in line.toCharArray()) {
-            val chStr = ch.toString()
-
-            count++
-
-            if (!marker.contains(chStr)) {
-                marker.add(chStr)
-
-                if (marker.size == significantChars) {
-                    break
-                }
-            } else {
-                val previous = marker.indexOf(chStr)
-                marker = marker
-                    .withIndex()
-                    .dropWhile { (index, _) -> index <= previous }
-                    .map { (_, item) -> item }
-                    .toMutableList()
-
-                marker.add(chStr)
-            }
+    private fun processMessage(line: String, significantChars: Int): Int = line
+        .toCharArray()
+        .toList()
+        .windowed(significantChars)
+        .withIndex()
+        .filter { (index, item) ->
+            item.toSet().size == significantChars
         }
-
-        println("marker: [${marker.joinToString()}]")
-
-        return count
-    }
+        .take(1)[0].index + significantChars
 }
