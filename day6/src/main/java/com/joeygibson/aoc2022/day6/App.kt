@@ -32,6 +32,14 @@ class App : Callable<Int> {
     }
 
     private fun part1(line: String): Any {
+        return processMessage(line, 4)
+    }
+
+    private fun part2(line: String): Any {
+        return processMessage(line, 14)
+    }
+
+    private fun processMessage(line: String, significantChars: Int): Int {
         var count = 0
         var marker = mutableListOf<String>()
 
@@ -43,7 +51,7 @@ class App : Callable<Int> {
             if (!marker.contains(chStr)) {
                 marker.add(chStr)
 
-                if (marker.size == 4) {
+                if (marker.size == significantChars) {
                     break
                 }
             } else {
@@ -58,15 +66,8 @@ class App : Callable<Int> {
             }
         }
 
-
         println("marker: [${marker.joinToString()}]")
 
         return count
-    }
-
-    private fun part2(line: String): Any {
-        // part 2 goes here
-
-        return "no result for part 2"
     }
 }
