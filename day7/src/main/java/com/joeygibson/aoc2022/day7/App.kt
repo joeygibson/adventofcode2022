@@ -32,24 +32,29 @@ class App : Callable<Int> {
         return 0
     }
 
-    private fun part1(root: ElvenDirectory): Int {
-        val size = root.size
-        println("size: $size")
+    private fun part1(root: ElvenDirectory): Long {
+        val matchingDirs = walkDirectories(root) { d -> d.size <= 100000 }
 
-
-
-        return -1
+        return matchingDirs.sumOf { it.size }
     }
 
-    private fun walkDirectories(dir: ElvenDirectory, func: (ElvenDirectory) -> Boolean): ElvenDirectory {
-        if (dir.directories.isEmpty()) {
-            if (func(dir)) {
-                return dir
-            }
-        }
-        for (sub in dir.directories) {
+    private fun walkDirectories(dir: ElvenDirectory, func: (ElvenDirectory) -> Boolean): List<ElvenDirectory> {
+        val matchingDirs = mutableListOf<ElvenDirectory>()
 
+        if (func(dir)) {
+            matchingDirs.add(dir)
         }
+
+        if (dir.directories.isEmpty()) {
+            return matchingDirs
+        }
+
+        for (sub in dir.directories) {
+            val subMatches = walkDirectories(sub, func)
+            matchingDirs.addAll(subMatches)
+        }
+
+        return matchingDirs
     }
 
     private fun part2(root: ElvenDirectory): Any {
@@ -71,6 +76,7 @@ class App : Callable<Int> {
                     val subDirName = line.split(" ")[2]
                     val subDir = ElvenDirectory(subDirName, cwd)
                     cwd.directories.add(subDir)
+                    cwd = subDir
                 }
 
                 else -> {
