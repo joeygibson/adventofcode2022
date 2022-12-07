@@ -16,6 +16,9 @@ class App : Callable<Int> {
     @CommandLine.Parameters(index = "0", description = ["The file to process"])
     val file: File? = null
 
+    private val totalSpace = 70_000_000
+    private val desiredAvailale = 30_000_000
+
     @Throws(IOException::class)
     override fun call(): Int {
         if (file == null) {
@@ -27,16 +30,25 @@ class App : Callable<Int> {
         val root = buildDirectory(lines.drop(2))
 
         printResults("part1", part1(root))
-//        printResults("part2", part2(lines))
+        printResults("part2", part2(root))
 
         return 0
     }
 
     private fun part1(root: ElvenDirectory): Long {
-        val matchingDirs = walkDirectories(root) { d -> d.size <= 100000 }
+        val matchingDirs = walkDirectories(root) { d -> d.size <= 100_000 }
 
         return matchingDirs.sumOf { it.size }
     }
+
+    private fun part2(root: ElvenDirectory): Long {
+        val totalUsed = root.size
+        val needToDelete = desiredAvailale - (totalSpace - totalUsed)
+
+        return walkDirectories(root) { d -> d.size >= needToDelete }
+            .minOf { it.size }
+    }
+
 
     private fun walkDirectories(dir: ElvenDirectory, func: (ElvenDirectory) -> Boolean): List<ElvenDirectory> {
         val matchingDirs = mutableListOf<ElvenDirectory>()
@@ -55,13 +67,6 @@ class App : Callable<Int> {
         }
 
         return matchingDirs
-    }
-
-    private fun part2(root: ElvenDirectory): Any {
-        // part 2 goes here
-
-
-        return "no result for part 2"
     }
 
     private fun buildDirectory(lines: List<String>): ElvenDirectory {
@@ -102,6 +107,10 @@ data class ElvenDirectory(val name: String, val parent: ElvenDirectory?) {
 
             return fileSizes + dirSizes
         }
+
+    override fun toString(): String {
+        return """Dir(name=${name}, parent=${parent?.name ?: ""}, size=$size"""
+    }
 }
 
 data class ElvenFile(val name: String, val size: Int)
