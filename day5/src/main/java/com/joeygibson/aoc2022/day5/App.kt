@@ -84,11 +84,6 @@ class App : Callable<Int> {
                 val (num, src, dest) = match.destructured.toList().map(String::toInt)
 
                 mover(stacks, num, src, dest)
-
-                if (visualize) {
-                    visualize(stacks)
-                    Thread.sleep(1000)
-                }
             }
         }
 
@@ -100,7 +95,7 @@ class App : Callable<Int> {
 
             terminal.setCursorPosition(startCol, rows)
             terminal.putString(msg)
-            
+
             // wait for a keypress
             terminal.readInput()
         }
@@ -210,6 +205,11 @@ class App : Callable<Int> {
             stacks[src]?.last()?.let { crate ->
                 stacks[dest]?.add(crate)
                 stacks[src]?.removeLast()
+
+                if (visualize) {
+                    visualize(stacks)
+                    Thread.sleep(100)
+                }
             }
         }
     }
@@ -220,6 +220,11 @@ class App : Callable<Int> {
 
             repeat(num) {
                 stacks[src]?.removeLast()
+            }
+
+            if (visualize) {
+                visualize(stacks)
+                Thread.sleep(100)
             }
         }
     }
