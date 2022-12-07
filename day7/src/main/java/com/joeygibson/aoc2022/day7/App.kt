@@ -51,22 +51,16 @@ class App : Callable<Int> {
 
 
     private fun walkDirectories(dir: Directory, func: (Directory) -> Boolean): List<Directory> {
-        val matchingDirs = mutableListOf<Directory>()
-
-        if (func(dir)) {
-            matchingDirs.add(dir)
+        val matchingDirs = buildList {
+            if (func(dir)) {
+                this.add(dir)
+            }
         }
 
-        if (dir.directories.isEmpty()) {
-            return matchingDirs
-        }
+        val matchingSubDirs = dir.directories
+            .flatMap { walkDirectories(it, func) }
 
-        for (sub in dir.directories) {
-            val subMatches = walkDirectories(sub, func)
-            matchingDirs.addAll(subMatches)
-        }
-
-        return matchingDirs
+        return matchingDirs.plus(matchingSubDirs)
     }
 
     private fun buildDirectory(lines: List<String>): Directory {
