@@ -35,13 +35,13 @@ class App : Callable<Int> {
         return 0
     }
 
-    private fun part1(root: ElvenDirectory): Long {
+    private fun part1(root: Directory): Long {
         val matchingDirs = walkDirectories(root) { d -> d.size <= 100_000 }
 
         return matchingDirs.sumOf { it.size }
     }
 
-    private fun part2(root: ElvenDirectory): Long {
+    private fun part2(root: Directory): Long {
         val totalUsed = root.size
         val needToDelete = desiredAvailale - (totalSpace - totalUsed)
 
@@ -50,8 +50,8 @@ class App : Callable<Int> {
     }
 
 
-    private fun walkDirectories(dir: ElvenDirectory, func: (ElvenDirectory) -> Boolean): List<ElvenDirectory> {
-        val matchingDirs = mutableListOf<ElvenDirectory>()
+    private fun walkDirectories(dir: Directory, func: (Directory) -> Boolean): List<Directory> {
+        val matchingDirs = mutableListOf<Directory>()
 
         if (func(dir)) {
             matchingDirs.add(dir)
@@ -69,8 +69,8 @@ class App : Callable<Int> {
         return matchingDirs
     }
 
-    private fun buildDirectory(lines: List<String>): ElvenDirectory {
-        val root = ElvenDirectory("/", null)
+    private fun buildDirectory(lines: List<String>): Directory {
+        val root = Directory("/", null)
         var cwd = root
 
         for (line in lines) {
@@ -79,15 +79,14 @@ class App : Callable<Int> {
                 (line.startsWith("$ cd ..")) -> cwd = cwd.parent ?: root
                 (line.startsWith("$ cd")) -> {
                     val subDirName = line.split(" ")[2]
-                    val subDir = ElvenDirectory(subDirName, cwd)
+                    val subDir = Directory(subDirName, cwd)
                     cwd.directories.add(subDir)
                     cwd = subDir
                 }
 
                 else -> {
-                    val (size, fileName) = line.split(" ")
-                    val file = ElvenFile(fileName, size.toInt())
-                    cwd.files.add(file)
+                    val size = line.split(" ")[0]
+                    cwd.fileSize += size.toInt()
                 }
             }
         }
@@ -96,16 +95,15 @@ class App : Callable<Int> {
     }
 }
 
-data class ElvenDirectory(val name: String, val parent: ElvenDirectory?) {
-    val files: MutableList<ElvenFile> = mutableListOf()
-    val directories: MutableList<ElvenDirectory> = mutableListOf()
+data class Directory(val name: String, val parent: Directory?) {
+    var fileSize: Long = 0
+    val directories: MutableList<Directory> = mutableListOf()
 
     val size: Long
         get() {
-            val fileSizes = files.sumOf { it.size }
             val dirSizes = directories.sumOf { it.size }
 
-            return fileSizes + dirSizes
+            return fileSize + dirSizes
         }
 
     override fun toString(): String {
@@ -113,4 +111,3 @@ data class ElvenDirectory(val name: String, val parent: ElvenDirectory?) {
     }
 }
 
-data class ElvenFile(val name: String, val size: Int)
