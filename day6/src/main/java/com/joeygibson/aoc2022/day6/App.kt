@@ -40,9 +40,7 @@ class App : Callable<Int> {
     }
 
     private fun processMessage(line: String, significantChars: Int): Int = line
-        .toCharArray()
-        .toList()
-        .windowed(significantChars)
+        .windowedSequence(significantChars)
         .withIndex()
         .first { (_, item) ->
             item.toSet().size == significantChars
