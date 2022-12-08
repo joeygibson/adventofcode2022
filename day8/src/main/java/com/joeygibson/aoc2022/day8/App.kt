@@ -25,17 +25,17 @@ class App : Callable<Int> {
 
         val lines = readWithoutBlanks(file)
 
-        printResults("part1", part1(lines))
-        printResults("part2", part2(lines))
-
-        return 0
-    }
-
-    private fun part1(lines: List<String>): Any {
         val trees = lines.map {
             it.toCharArray().map { c -> c.toString().toInt() }
         }
 
+        printResults("part1", part1(trees))
+        printResults("part2", part2(trees))
+
+        return 0
+    }
+
+    private fun part1(trees: List<List<Int>>): Any {
         return (0 until trees.size).flatMap { i ->
             (0 until trees[0].size).map { j ->
                 val thisTree = Pair(i, j)
@@ -70,7 +70,6 @@ class App : Callable<Int> {
                     if (aboveCount == 0 || belowCount == 0 ||
                         leftCount == 0 || rightCount == 0
                     ) {
-                        println(thisTree)
                         thisTree
                     } else {
                         null
@@ -80,11 +79,54 @@ class App : Callable<Int> {
         }.count { it != null }
     }
 
-    private fun part2(lines: List<String>): Any {
-        // part 2 goes here
+    private fun part2(trees: List<List<Int>>): Any {
+        val scores = (0 until trees.size).flatMap { i ->
+            (0 until trees[0].size).map { j ->
+                val thisTreeHeight = trees[i][j]
 
-        return "no result for part 2"
+                var aboveCount = 1
+                var belowCount = 1
+                var leftCount = 1
+                var rightCount = 1
+
+                for (ii in (i - 1) downTo 0) {
+                    if (trees[ii][j] < thisTreeHeight) {
+                        aboveCount++
+                    } else {
+                        break
+                    }
+                }
+
+                for (ii in (i + 1) until trees.size) {
+                    if (trees[ii][j] < thisTreeHeight) {
+                        belowCount++
+                    } else {
+                        break
+                    }
+                }
+
+                for (jj in (j - 1) downTo 0) {
+                    if (trees[i][jj] < thisTreeHeight) {
+                        leftCount++
+                    } else {
+                        break
+                    }
+                }
+
+                for (jj in (j + 1) until trees[0].size) {
+                    if (trees[i][jj] < thisTreeHeight) {
+                        rightCount++
+                    } else {
+                        break
+                    }
+                }
+
+                aboveCount * belowCount * leftCount * rightCount
+            }
+        }.max()
+
+        println("scores: $scores")
+
+        return "foo"
     }
-
-
 }
