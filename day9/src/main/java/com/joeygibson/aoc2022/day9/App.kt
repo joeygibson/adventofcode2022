@@ -1,5 +1,8 @@
 package com.joeygibson.aoc2022.day9
 
+import com.googlecode.lanterna.TextColor
+import com.googlecode.lanterna.terminal.DefaultTerminalFactory
+import com.googlecode.lanterna.terminal.Terminal
 import picocli.CommandLine
 import java.io.File
 import java.io.IOException
@@ -16,6 +19,8 @@ class App : Callable<Int> {
     @CommandLine.Parameters(index = "0", description = ["The file to process"])
     val file: File? = null
 
+    private lateinit var terminal: Terminal
+
     @Throws(IOException::class)
     override fun call(): Int {
         if (file == null) {
@@ -28,6 +33,8 @@ class App : Callable<Int> {
                 val chunks = it.split(" ")
                 Pair(chunks[0], chunks[1].toInt())
             }
+
+        terminal = setupTerminal()
 
         printResults("part1", part1(moves))
         printResults("part2", part2(moves))
@@ -88,15 +95,46 @@ class App : Callable<Int> {
         ).toInt()
     }
 
+    private fun setupTerminal(): Terminal {
+        val defaultTerminalFactory = DefaultTerminalFactory()
+        val terminal = defaultTerminalFactory.createTerminal()
+        val foreground = TextColor.Factory.fromString("white")
+        val background = TextColor.Factory.fromString("black")
+
+        terminal.setCursorVisible(false)
+        terminal.setForegroundColor(foreground)
+        terminal.setBackgroundColor(background)
+
+        return terminal
+    }
+
     private fun part2(moves: List<Pair<String, Int>>): Any {
+        val columns = terminal.terminalSize.columns - 1
+        val rows = terminal.terminalSize.rows - 1
+        val xModifier = columns / 2
+        val yModifier = rows / 2
+
         val knots = CharRange('A', 'J')
             .map { Knot(it, 0, 0) }
             .toList()
 
-        val tailMoves = mutableSetOf<Pair<Int, Int>>(knots[9].coordinates)
+        knots.forEach {
+            terminal.clearScreen()
+            terminal.setCursorPosition((it.x) + xModifier, (-it.y) + yModifier)
+            terminal.putCharacter(it.name)
+            terminal.flush()
+        }
+
+        val tailMoves = mutableSetOf(knots[9].coordinates)
 
         for (move in moves) {
+            terminal.setCursorPosition(0, 0)
+            terminal.putString(move.toString())
+
             repeat(move.second) {
+                terminal.setCursorPosition(knots[0].x + xModifier, (-knots[0].y) + yModifier)
+                terminal.putCharacter(' ')
+
                 when (move.first) {
                     "R" -> {
                         knots[0].x += 1
@@ -132,6 +170,8 @@ class App : Callable<Int> {
                             yDiff = -1
                         }
 
+                        val oldPos = knots[i].coordinates
+
                         knots[i].x += xDiff
                         knots[i].y += yDiff
 
@@ -140,12 +180,38 @@ class App : Callable<Int> {
                         if (i == 9) {
                             tailMoves.add(knots[i].coordinates)
                         }
+
+                        knots.forEach {
+                            terminal.setCursorPosition(oldPos.first + xModifier, (-oldPos.second) + yModifier)
+                            terminal.putCharacter(' ')
+                            terminal.setCursorPosition((it.x) + xModifier, (-it.y) + yModifier)
+                            terminal.putCharacter(it.name)
+                            terminal.flush()
+                            Thread.sleep(10)
+
+                            terminal.pollInput()?.let {
+                                resetTerminal(terminal)
+                                exitProcess(0)
+                            }
+                        }
                     }
+                }
+
+                terminal.pollInput()?.let {
+                    resetTerminal(terminal)
+                    exitProcess(0)
                 }
             }
         }
 
+        terminal.readInput()
+
         return tailMoves.size
+    }
+
+    private fun resetTerminal(terminal: Terminal) {
+        terminal.clearScreen()
+        terminal.setCursorVisible(true)
     }
 }
 
