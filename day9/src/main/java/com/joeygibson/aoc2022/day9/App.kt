@@ -1,6 +1,5 @@
 package com.joeygibson.aoc2022.day9
 
-import org.apache.commons.lang3.tuple.MutablePair
 import picocli.CommandLine
 import java.io.File
 import java.io.IOException
@@ -37,44 +36,44 @@ class App : Callable<Int> {
     }
 
     private fun part1(moves: List<Pair<String, Int>>): Any {
-        val headPos = MutablePair(0, 0)
-        val tailPos = MutablePair(0, 0)
+        val headPos = Knot('H', 0, 0)
+        val tailPos = Knot('T', 0, 0)
         var xCatchUp = 0
         var yCatchUp = 0
-        val tailMoves = mutableSetOf<Pair<Int, Int>>(tailPos.toPair())
+        val tailMoves = mutableSetOf<Pair<Int, Int>>(tailPos.coordinates)
 
         for (move in moves) {
             repeat(move.second) {
                 when (move.first) {
                     "R" -> {
-                        headPos.left += 1
+                        headPos.x += 1
                         xCatchUp = -1
                         yCatchUp = 0
                     }
 
                     "L" -> {
-                        headPos.left -= 1
+                        headPos.x -= 1
                         xCatchUp = 1
                         yCatchUp = 0
                     }
 
                     "U" -> {
-                        headPos.right += 1
+                        headPos.y += 1
                         xCatchUp = 0
                         yCatchUp = -1
                     }
 
                     "D" -> {
-                        headPos.right -= 1
+                        headPos.y -= 1
                         xCatchUp = 0
                         yCatchUp = 1
                     }
                 }
 
                 if (distance(headPos, tailPos) > 1) {
-                    tailPos.left = headPos.left + xCatchUp
-                    tailPos.right = headPos.right + yCatchUp
-                    tailMoves.add(tailPos.toPair())
+                    tailPos.x = headPos.x + xCatchUp
+                    tailPos.y = headPos.y + yCatchUp
+                    tailMoves.add(tailPos.coordinates)
                 }
             }
         }
@@ -82,42 +81,44 @@ class App : Callable<Int> {
         return tailMoves.size
     }
 
-    private fun distance(head: MutablePair<Int, Int>, tail: MutablePair<Int, Int>): Int {
+    private fun distance(head: Knot, tail: Knot): Int {
         return Math.sqrt(
-            Math.pow((tail.left - head.left).toDouble(), 2.0) +
-                    Math.pow((tail.right - head.right).toDouble(), 2.0)
+            Math.pow((tail.x - head.x).toDouble(), 2.0) +
+                    Math.pow((tail.y - head.y).toDouble(), 2.0)
         ).toInt()
     }
 
     private fun part2(moves: List<Pair<String, Int>>): Any {
-        val knots = MutableList(10) { MutablePair(0, 0) }
+        val knots = CharRange('A', 'J')
+            .map { Knot(it, 0, 0) }
+            .toList()
 
-        val tailMoves = mutableSetOf<Pair<Int, Int>>(knots[9].toPair())
+        val tailMoves = mutableSetOf<Pair<Int, Int>>(knots[9].coordinates)
 
         for (move in moves) {
             repeat(move.second) {
                 when (move.first) {
                     "R" -> {
-                        knots[0].left += 1
+                        knots[0].x += 1
                     }
 
                     "L" -> {
-                        knots[0].left -= 1
+                        knots[0].x -= 1
                     }
 
                     "U" -> {
-                        knots[0].right += 1
+                        knots[0].y += 1
                     }
 
                     "D" -> {
-                        knots[0].right -= 1
+                        knots[0].y -= 1
                     }
                 }
 
                 for (i in 1..9) {
                     if (distance(knots[i - 1], knots[i]) > 1) {
-                        var xDiff = knots[i - 1].left - knots[i].left
-                        var yDiff = knots[i - 1].right - knots[i].right
+                        var xDiff = knots[i - 1].x - knots[i].x
+                        var yDiff = knots[i - 1].y - knots[i].y
 
                         if (xDiff == 2) {
                             xDiff = 1
@@ -127,17 +128,17 @@ class App : Callable<Int> {
 
                         if (yDiff == 2) {
                             yDiff = 1
-                        } else if (yDiff == -1) {
-                            yDiff = 1
+                        } else if (yDiff == -2) {
+                            yDiff = -1
                         }
 
-                        knots[i].left += xDiff
-                        knots[i].right += yDiff
+                        knots[i].x += xDiff
+                        knots[i].y += yDiff
 
                         assert(distance(knots[i - 1], knots[i]) <= 1)
 
                         if (i == 9) {
-                            tailMoves.add(knots[i].toPair())
+                            tailMoves.add(knots[i].coordinates)
                         }
                     }
                 }
@@ -146,4 +147,9 @@ class App : Callable<Int> {
 
         return tailMoves.size
     }
+}
+
+data class Knot(val name: Char, var x: Int, var y: Int) {
+    val coordinates: Pair<Int, Int>
+        get() = Pair(this.x, this.y)
 }
