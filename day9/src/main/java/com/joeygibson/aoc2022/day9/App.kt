@@ -119,11 +119,16 @@ class App : Callable<Int> {
                         var xDiff = knots[i - 1].left - knots[i].left
                         var yDiff = knots[i - 1].right - knots[i].right
 
-                        when (move.first) {
-                            "U" -> yDiff -= 1
-                            "D" -> yDiff -= 1
-                            "L" -> xDiff -= 1
-                            "R" -> xDiff -= 1
+                        if (xDiff == 2) {
+                            xDiff = 1
+                        } else if (xDiff == -2) {
+                            xDiff = -1
+                        }
+
+                        if (yDiff == 2) {
+                            yDiff = 1
+                        } else if (yDiff == -1) {
+                            yDiff = 1
                         }
 
                         knots[i].left += xDiff
