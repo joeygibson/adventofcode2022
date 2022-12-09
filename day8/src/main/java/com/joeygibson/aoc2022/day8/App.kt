@@ -80,43 +80,43 @@ class App : Callable<Int> {
     }
 
     private fun part2(trees: List<List<Int>>): Any {
-        val scores = (0 until trees.size).flatMap { i ->
+        return (0 until trees.size).flatMap { i ->
             (0 until trees[0].size).map { j ->
                 val thisTreeHeight = trees[i][j]
 
-                var aboveCount = 1
-                var belowCount = 1
-                var leftCount = 1
-                var rightCount = 1
+                var aboveCount = 0
+                var belowCount = 0
+                var leftCount = 0
+                var rightCount = 0
 
                 for (ii in (i - 1) downTo 0) {
-                    if (trees[ii][j] < thisTreeHeight) {
-                        aboveCount++
-                    } else {
+                    aboveCount++
+
+                    if (trees[ii][j] >= thisTreeHeight) {
                         break
                     }
                 }
 
                 for (ii in (i + 1) until trees.size) {
-                    if (trees[ii][j] < thisTreeHeight) {
-                        belowCount++
-                    } else {
+                    belowCount++
+
+                    if (trees[ii][j] >= thisTreeHeight) {
                         break
                     }
                 }
 
                 for (jj in (j - 1) downTo 0) {
-                    if (trees[i][jj] < thisTreeHeight) {
-                        leftCount++
-                    } else {
+                    leftCount++
+
+                    if (trees[i][jj] >= thisTreeHeight) {
                         break
                     }
                 }
 
                 for (jj in (j + 1) until trees[0].size) {
-                    if (trees[i][jj] < thisTreeHeight) {
-                        rightCount++
-                    } else {
+                    rightCount++
+
+                    if (trees[i][jj] >= thisTreeHeight) {
                         break
                     }
                 }
@@ -124,9 +124,5 @@ class App : Callable<Int> {
                 aboveCount * belowCount * leftCount * rightCount
             }
         }.max()
-
-        println("scores: $scores")
-
-        return "foo"
     }
 }
