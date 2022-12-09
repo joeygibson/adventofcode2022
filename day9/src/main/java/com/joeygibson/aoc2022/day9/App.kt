@@ -41,7 +41,7 @@ class App : Callable<Int> {
         val tailPos = MutablePair(0, 0)
         var xCatchUp = 0
         var yCatchUp = 0
-        var tailMoves = mutableSetOf<Pair<Int, Int>>(tailPos.toPair())
+        val tailMoves = mutableSetOf<Pair<Int, Int>>(tailPos.toPair())
 
         for (move in moves) {
             repeat(move.second) {
@@ -51,16 +51,19 @@ class App : Callable<Int> {
                         xCatchUp = -1
                         yCatchUp = 0
                     }
+
                     "L" -> {
                         headPos.left -= 1
                         xCatchUp = 1
                         yCatchUp = 0
                     }
+
                     "U" -> {
                         headPos.right += 1
                         xCatchUp = 0
                         yCatchUp = -1
                     }
+
                     "D" -> {
                         headPos.right -= 1
                         xCatchUp = 0
@@ -87,8 +90,55 @@ class App : Callable<Int> {
     }
 
     private fun part2(moves: List<Pair<String, Int>>): Any {
-        // part 2 goes here
+        val knots = MutableList(10) { MutablePair(0, 0) }
 
-        return "no result for part 2"
+        val tailMoves = mutableSetOf<Pair<Int, Int>>(knots[9].toPair())
+
+        for (move in moves) {
+            repeat(move.second) {
+                when (move.first) {
+                    "R" -> {
+                        knots[0].left += 1
+                    }
+
+                    "L" -> {
+                        knots[0].left -= 1
+                    }
+
+                    "U" -> {
+                        knots[0].right += 1
+                    }
+
+                    "D" -> {
+                        knots[0].right -= 1
+                    }
+                }
+
+                for (i in 1..9) {
+                    if (distance(knots[i - 1], knots[i]) > 1) {
+                        var xDiff = knots[i - 1].left - knots[i].left
+                        var yDiff = knots[i - 1].right - knots[i].right
+
+                        when (move.first) {
+                            "U" -> yDiff -= 1
+                            "D" -> yDiff -= 1
+                            "L" -> xDiff -= 1
+                            "R" -> xDiff -= 1
+                        }
+
+                        knots[i].left += xDiff
+                        knots[i].right += yDiff
+
+                        assert(distance(knots[i - 1], knots[i]) <= 1)
+
+                        if (i == 9) {
+                            tailMoves.add(knots[i].toPair())
+                        }
+                    }
+                }
+            }
+        }
+
+        return tailMoves.size
     }
 }
