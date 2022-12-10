@@ -74,8 +74,52 @@ class App : Callable<Int> {
     }
 
     private fun part2(lines: List<String>): Any {
-        // part 2 goes here
+        val cycleValues = mutableListOf<Int>()
+        var register = 1
+        var cycle = 0
 
-        return "no result for part 2"
+        lines.forEach { line ->
+            cycle++
+
+            cycleValues.add(register)
+
+            when {
+                line.startsWith("addx") -> {
+                    val value = line.split(" ")[1].toInt()
+
+                    repeat(2) { c ->
+                        if (c == 1) {
+                            register += value
+                        } else {
+                            cycle++
+                            cycleValues.add(register)
+                        }
+                    }
+                }
+            }
+        }
+
+        cycle++
+        cycleValues.add(register)
+
+        (0..5).forEach { row ->
+            (0..39).forEach { col ->
+                val index = row * 40 + col
+                val registerValue = cycleValues[index]
+                val range = (col - 1 .. col + 1)
+
+                val pixel = if (range.contains(registerValue)) {
+                    "#"
+                } else {
+                    "."
+                }
+
+                print(pixel)
+            }
+
+            println()
+        }
+
+        return ""
     }
 }
