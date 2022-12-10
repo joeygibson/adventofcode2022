@@ -1,5 +1,6 @@
 package com.joeygibson.aoc2022.XXX
 
+import com.googlecode.lanterna.terminal.Terminal
 import picocli.CommandLine
 import java.io.File
 import java.io.IOException
@@ -16,6 +17,8 @@ class App : Callable<Int> {
     @CommandLine.Parameters(index = "0", description = ["The file to process"])
     val file: File? = null
 
+    private lateinit var terminal: Terminal
+
     @Throws(IOException::class)
     override fun call(): Int {
         if (file == null) {
@@ -24,6 +27,9 @@ class App : Callable<Int> {
         }
 
         val lines = readInput(file)
+
+        // uncomment to do visualization
+        // terminal = setupTerminal()
 
         printResults("part1", part1(lines))
         printResults("part2", part2(lines))
