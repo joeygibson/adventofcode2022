@@ -1,5 +1,7 @@
 package com.joeygibson.aoc2022.day10
 
+import com.googlecode.lanterna.TextColor
+import com.googlecode.lanterna.terminal.Terminal
 import picocli.CommandLine
 import java.io.File
 import java.io.IOException
@@ -16,6 +18,8 @@ class App : Callable<Int> {
     @CommandLine.Parameters(index = "0", description = ["The file to process"])
     val file: File? = null
 
+    private lateinit var terminal: Terminal
+
     @Throws(IOException::class)
     override fun call(): Int {
         if (file == null) {
@@ -25,8 +29,10 @@ class App : Callable<Int> {
 
         val lines = readWithoutBlanks(file)
 
+        terminal = setupTerminal()
+
         printResults("part1", part1(lines))
-        printResults("part2", part2(lines))
+        part2(lines)
 
         return 0
     }
@@ -102,23 +108,49 @@ class App : Callable<Int> {
         cycle++
         cycleValues.add(register)
 
+        val (rows, cols) = getTerminalDimensions(terminal)
+        println("rows: $rows, cols: $cols")
+        var curX = (cols - 40) / 2
+        var curY = (rows - 6) / 2
+
+        terminal.clearScreen()
+
         (0..5).forEach { row ->
+            curY += 1
+            curX = (cols - 40) / 2
+
             (0..39).forEach { col ->
                 val index = row * 40 + col
                 val registerValue = cycleValues[index]
-                val range = (col - 1 .. col + 1)
+                val range = (col - 1..col + 1)
 
                 val pixel = if (range.contains(registerValue)) {
-                    "#"
+                    '█'
                 } else {
-                    "."
+                    '.'
                 }
 
-                print(pixel)
-            }
+                curX += 1
 
-            println()
+                terminal.setCursorPosition(curX, curY)
+                terminal.setBackgroundColor(TextColor.Factory.fromString("blue"))
+                terminal.putCharacter('.')
+                Thread.sleep(10)
+
+                terminal.setCursorPosition(curX, curY)
+                terminal.setBackgroundColor(TextColor.Factory.fromString("black"))
+                terminal.putCharacter(pixel)
+                Thread.sleep(10)
+
+                terminal.pollInput()?.let {
+                    resetTerminal(terminal)
+                    exitProcess(0)
+                }
+            }
         }
+
+        terminal.readInput()
+        terminal.setCursorVisible(true)
 
         return ""
     }
