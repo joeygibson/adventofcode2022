@@ -22,9 +22,15 @@
         <json.version>20220924</json.version>
         <log4j-slf4j-impl.version>2.19.0</log4j-slf4j-impl.version>
         <kotlin.version>1.7.22</kotlin.version>
+        <lanterna.version>3.1.1</lanterna.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.googlecode.lanterna</groupId>
+            <artifactId>lanterna</artifactId>
+            <version>${lanterna.version}</version>
+        </dependency>
         <dependency>
             <groupId>info.picocli</groupId>
             <artifactId>picocli</artifactId>
