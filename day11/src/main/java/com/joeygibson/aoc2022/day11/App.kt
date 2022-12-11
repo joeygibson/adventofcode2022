@@ -31,13 +31,8 @@ class App : Callable<Int> {
                 it.split("\n")
             }
 
-        // uncomment to do visualization
-        // terminal = setupTerminal()
-
-        val monkeys = buildMonkeys(lines)
-
-        printResults("part1", part1(monkeys))
-//        printResults("part2", part2(monkeys))
+        printResults("part1", part1(buildMonkeys(lines)))
+        printResults("part2", part2(buildMonkeys(lines)))
 
         return 0
     }
@@ -48,23 +43,23 @@ class App : Callable<Int> {
                 val id = lines[0].split(" ")[1].replace(":", "").toInt()
                 val items = lines[1].split(": ")[1]
                     .split(""",\s*""".toRegex())
-                    .map { Item(it.toInt()) }
+                    .map { Item(it.toLong()) }
                     .toMutableList()
                 val opChunks = lines[2].split("old ")[1].split(" ")
                 val op = if (opChunks[1] != "old") {
                     if (opChunks[0] == "+") {
-                        { old: Int -> old + opChunks[1].toInt() }
+                        { old: Long -> old + opChunks[1].toInt() }
                     } else {
-                        { old: Int -> old * opChunks[1].toInt() }
+                        { old: Long -> old * opChunks[1].toInt() }
                     }
                 } else {
                     if (opChunks[0] == "+") {
-                        { old: Int -> old + old }
+                        { old: Long -> old + old }
                     } else {
-                        { old: Int -> old * old }
+                        { old: Long -> old * old }
                     }
                 }
-                val test = lines[3].split("divisible by ")[1].toInt()
+                val test = lines[3].split("divisible by ")[1].toLong()
                 val trueMonkey = lines[4].split("monkey ")[1].toInt()
                 val falseMonkey = lines[5].split("monkey ")[1].toInt()
 
@@ -75,7 +70,7 @@ class App : Callable<Int> {
     private fun part1(monkeys: List<Monkey>): Any {
         (0 until 20).forEach { turn ->
             monkeys.forEach { monkey ->
-                monkey.takeTurn(monkeys)
+                monkey.takeTurn(monkeys, 3)
             }
         }
 
@@ -86,39 +81,56 @@ class App : Callable<Int> {
             .reduce { a, b -> a * b }
     }
 
-    private fun part2(lines: List<Monkey>): Any {
-        // part 2 goes here
+    private fun part2(monkeys: List<Monkey>): Any {
+        val worryReducer = monkeys
+            .map { it.test }
+            .fold(1L) { a, b -> a * b }
 
-        return "no result for part 2"
+        (0 until 10_000).forEach { turn ->
+            monkeys.forEach { monkey ->
+                monkey.takeTurn(monkeys, worryReducer)
+            }
+        }
+
+        return monkeys
+            .sortedByDescending { it.inspectionCount }
+            .take(2)
+            .map { it.inspectionCount }
+            .reduce { a, b -> a * b }
     }
 }
 
-data class Item(var worry: Int) {
-    fun inspect(op: (Int) -> Int) {
+data class Item(var worry: Long) {
+    fun inspect(op: (Long) -> Long) {
         worry = op(worry)
+        assert(worry >= 0)
     }
 
-    fun expressBoredom() {
-        worry /= 3
+    fun expressBoredom(worryReducer: Long) {
+        if (worryReducer == 3L) {
+            worry /= 3
+        } else {
+            worry %= worryReducer
+        }
     }
 
-    fun test(testVal: Int): Boolean = worry % testVal == 0
+    fun test(testVal: Long): Boolean = worry % testVal == 0L
 }
 
 data class Monkey(
     val number: Int,
     val items: MutableList<Item>,
-    val test: Int,
+    val test: Long,
     val trueMonkey: Int,
     val falseMonkey: Int,
-    val operation: (Int) -> Int
+    val operation: (Long) -> Long
 ) {
-    var inspectionCount = 0
+    var inspectionCount = 0L
 
-    fun takeTurn(monkeys: List<Monkey>) {
+    fun takeTurn(monkeys: List<Monkey>, worryReducer: Long) {
         items.forEach { item ->
             item.inspect(operation)
-            item.expressBoredom()
+            item.expressBoredom(worryReducer)
 
             if (item.test(test)) {
                 monkeys[trueMonkey].items.add(item)
