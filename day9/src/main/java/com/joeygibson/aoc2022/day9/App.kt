@@ -21,6 +21,19 @@ class App : Callable<Int> {
 
     private lateinit var terminal: Terminal
 
+    private val colors = listOf(
+        TextColor.ANSI.RED_BRIGHT,
+        TextColor.ANSI.YELLOW_BRIGHT,
+        TextColor.ANSI.GREEN_BRIGHT,
+        TextColor.ANSI.BLUE_BRIGHT,
+        TextColor.ANSI.WHITE_BRIGHT,
+        TextColor.ANSI.CYAN_BRIGHT,
+        TextColor.ANSI.MAGENTA_BRIGHT,
+        TextColor.RGB(0xdc, 0xdc, 0xdc),
+        TextColor.RGB(0xc0, 0xc0, 0xc0),
+        TextColor.RGB(0xd3, 0xd3, 0xd3)
+    )
+
     @Throws(IOException::class)
     override fun call(): Int {
         if (file == null) {
@@ -181,19 +194,21 @@ class App : Callable<Int> {
                             tailMoves.add(knots[i].coordinates)
                         }
 
-                        knots.forEach {
-                            terminal.setCursorPosition(oldPos.first + xModifier, (-oldPos.second) + yModifier)
-                            terminal.putCharacter(' ')
-                            terminal.setCursorPosition((it.x) + xModifier, (-it.y) + yModifier)
-                            terminal.putCharacter(it.name)
-                            terminal.flush()
-                            Thread.sleep(10)
+                        knots.withIndex()
+                            .forEach { (index, knot) ->
+                                terminal.setCursorPosition(oldPos.first + xModifier, (-oldPos.second) + yModifier)
+                                terminal.putCharacter(' ')
+                                terminal.setCursorPosition((knot.x) + xModifier, (-knot.y) + yModifier)
+                                terminal.setForegroundColor(colors[index])
+                                terminal.putCharacter(knot.name)
+                                terminal.flush()
+                                Thread.sleep(10)
 
-                            terminal.pollInput()?.let {
-                                resetTerminal(terminal)
-                                exitProcess(0)
+                                terminal.pollInput()?.let {
+                                    resetTerminal(terminal)
+                                    exitProcess(0)
+                                }
                             }
-                        }
                     }
                 }
 
