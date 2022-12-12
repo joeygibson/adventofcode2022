@@ -76,27 +76,25 @@ class App : Callable<Int> {
 
         println("start: $start, end: $end")
 
-        return findShortesPath(theMap, start, end)
+        return findShortestPath(start, end)
     }
 
     private fun part2(theMap: List<List<MapPoint>>): Any {
         val end = getEnd(theMap)
 
-        val shortest = theMap
+        return theMap
             .flatMap { row ->
                 row.filter { col ->
                     col.height == 0
                 }
             }
             .map { start ->
-                findShortesPath(theMap, start, end)
+                findShortestPath(start, end)
             }
             .min()
-
-        return shortest
     }
 
-    private fun findShortesPath(theMap: List<List<MapPoint>>, start: MapPoint, end: MapPoint): Int {
+    private fun findShortestPath(start: MapPoint, end: MapPoint): Int {
         val queue = mutableListOf(Pair(start, 0))
         val visited = mutableSetOf<MapPoint>()
         var best = 100000
