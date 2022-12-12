@@ -72,16 +72,31 @@ class App : Callable<Int> {
 
     private fun part1(theMap: List<List<MapPoint>>): Int {
         val start = getStart(theMap)
-        var visited = mutableSetOf<MapPoint>()
         val end = getEnd(theMap)
-        var moves = 0
 
         println("start: $start, end: $end")
 
-        return bfs(theMap, start, end)
+        return findShortesPath(theMap, start, end)
     }
 
-    private fun bfs(theMap: List<List<MapPoint>>, start: MapPoint, end: MapPoint): Int {
+    private fun part2(theMap: List<List<MapPoint>>): Any {
+        val end = getEnd(theMap)
+
+        val shortest = theMap
+            .flatMap { row ->
+                row.filter { col ->
+                    col.height == 0
+                }
+            }
+            .map { start ->
+                findShortesPath(theMap, start, end)
+            }
+            .min()
+
+        return shortest
+    }
+
+    private fun findShortesPath(theMap: List<List<MapPoint>>, start: MapPoint, end: MapPoint): Int {
         val queue = mutableListOf(Pair(start, 0))
         val visited = mutableSetOf<MapPoint>()
         var best = 100000
@@ -111,12 +126,6 @@ class App : Callable<Int> {
         }
 
         return best
-    }
-
-    private fun part2(lines: List<List<MapPoint>>): Any {
-        // part 2 goes here
-
-        return "no result for part 2"
     }
 
     private fun getStart(theMap: List<List<MapPoint>>): MapPoint {
