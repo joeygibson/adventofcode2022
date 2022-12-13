@@ -97,7 +97,7 @@ class App : Callable<Int> {
     private fun findShortestPath(start: MapPoint, end: MapPoint): Int {
         val queue = mutableListOf(Pair(start, 0))
         val visited = mutableSetOf<MapPoint>()
-        var best = 100000
+        var best = Int.MAX_VALUE
 
         while (queue.isNotEmpty()) {
             val (cur, score) = queue[0]; queue.removeAt(0)
@@ -178,7 +178,6 @@ class App : Callable<Int> {
         }
 
         return neighbors
-            .sortedByDescending { it.height }
             .toList()
     }
 }
