@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
+import json
 import sys
 
 
 def part1(lines: list[str]) -> int:
-    lines = [eval(line) for line in lines]
+    lines = [json.loads(line) for line in lines]
 
     groups = [lines[i * 2:(i + 1) * 2] for i in range((len(lines) + 2 - 1) // 2)]
 
@@ -11,7 +12,7 @@ def part1(lines: list[str]) -> int:
     for (group_id, group) in enumerate(groups):
         res = ordered_lists(group[0], group[1])
 
-        print(f'{group}: {res}')
+        # print(f'{group}: {res}')
         group_results.append(res)
 
     print(f'results: {group_results}')
@@ -24,9 +25,7 @@ def part1(lines: list[str]) -> int:
     return result
 
 
-def ordered_lists(a: list, b: list, recurse: bool = True) -> bool:
-    ordered = False
-
+def ordered_lists(a: list, b: list, ordered: bool = False, recurse: bool = True) -> bool:
     if a == b:
         ordered = True
     else:
@@ -38,21 +37,23 @@ def ordered_lists(a: list, b: list, recurse: bool = True) -> bool:
                 ordered = True
                 break
             else:
-                if isinstance(a[0], int) and isinstance(b[0], int):
-                    if ordered_ints(a[0], b[0]):
-                        ordered = True
-                elif isinstance(a[0], list) and isinstance(b[0], int):
-                    if ordered_lists(a[0], [b[0]], False):
-                        ordered = True
-                elif isinstance(a[0], int) and isinstance(b[0], list):
-                    if ordered_lists([a[0]], b[0], False):
-                        ordered = True
+                left = a[0]
+                right = b[0]
+
+                if isinstance(left, int) and isinstance(right, int):
+                    ordered = ordered_ints(left, right)
+                elif isinstance(left, list) and isinstance(right, int):
+                    ordered = ordered_lists(left, [right], ordered, False)
+                elif isinstance(left, int) and isinstance(right, list):
+                    ordered = ordered_lists([left], right, ordered, False)
                 else:
-                    if ordered_lists(a[0], b[0]):
-                        ordered = True
+                    ordered = ordered_lists(left, right, ordered)
+
+                if not ordered:
+                    break
 
                 if ordered and recurse:
-                    ordered = ordered_lists(a[1:], b[1:])
+                    return ordered_lists(a[1:], b[1:])
 
     return ordered
 
