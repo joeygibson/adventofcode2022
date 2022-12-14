@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import functools
 import json
 import sys
 
@@ -14,7 +15,7 @@ def part1(lines: list[str]) -> int:
 
     group_results = []
     for (group_id, group) in enumerate(groups):
-        res = ordered_lists(group[0], group[1])
+        res = compare(group[0], group[1])
 
         group_results.append(res)
 
@@ -28,19 +29,30 @@ def part1(lines: list[str]) -> int:
     return result
 
 
-def ordered_lists(left: list, right: list) -> int:
+def part2(lines: list[str]) -> int:
+    lines = [json.loads(line) for line in lines]
+
+    sorted_lines = sorted(lines, key=functools.cmp_to_key(compare))
+
+    key = sorted_lines.index([[2]]) + 1
+    key *= (sorted_lines.index([[6]]) + 1)
+
+    return key
+
+
+def compare(left: list, right: list) -> int:
     if left == right:
         return EQ
     else:
         if isinstance(left, int) and isinstance(right, int):
             return LT if left < right else GT
         elif isinstance(left, list) and isinstance(right, int):
-            return ordered_lists(left, [right])
+            return compare(left, [right])
         elif isinstance(left, int) and isinstance(right, list):
-            return ordered_lists([left], right)
+            return compare([left], right)
         elif left and right:
-            result = ordered_lists(left[0], right[0])
-            return ordered_lists(left[1:], right[1:]) if result == EQ else result
+            result = compare(left[0], right[0])
+            return compare(left[1:], right[1:]) if result == EQ else result
 
         return GT if left else LT
 
@@ -58,4 +70,5 @@ if __name__ == '__main__':
     file_name = sys.argv[1]
     data = get_data(file_name)
 
-    print(f'part1: {part1(get_data(file_name))}')
+    # print(f'part1: {part1(data)}')
+    print(f'part2: {part2(data)}')
