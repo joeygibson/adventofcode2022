@@ -32,6 +32,9 @@ def part1(lines: list[str]) -> int:
 def part2(lines: list[str]) -> int:
     lines = [json.loads(line) for line in lines]
 
+    lines.append([[2]])
+    lines.append([[6]])
+    
     sorted_lines = sorted(lines, key=functools.cmp_to_key(compare))
 
     key = sorted_lines.index([[2]]) + 1
@@ -70,5 +73,5 @@ if __name__ == '__main__':
     file_name = sys.argv[1]
     data = get_data(file_name)
 
-    # print(f'part1: {part1(data)}')
+    print(f'part1: {part1(data)}')
     print(f'part2: {part2(data)}')
