@@ -24,6 +24,7 @@ class App : Callable<Int> {
     private lateinit var terminal: Terminal
 
     private val theMap = mutableMapOf<Int, MutableMap<Int, String>>().withDefault { mutableMapOf() }
+    private var theFloor: Int = 0
 
     @Throws(IOException::class)
     override fun call(): Int {
@@ -32,18 +33,15 @@ class App : Callable<Int> {
             exitProcess(1)
         }
 
-        val lines = readWithoutBlanks(file)
+        createMap(readWithoutBlanks(file))
 
-        // uncomment to do visualization
-        // terminal = setupTerminal()
-
-        printResults("part1", part1(lines))
-        printResults("part2", part2(lines))
+//        printResults("part1", part1())
+        printResults("part2", part2())
 
         return 0
     }
 
-    private fun part1(lines: List<String>): Any {
+    private fun createMap(lines: List<String>) {
         lines.forEach { line ->
             line.split(" -> ")
                 .map { it.split(",").map(String::toInt) }
@@ -84,8 +82,12 @@ class App : Callable<Int> {
                 }
         }
 
-        drawMap()
+        theFloor = theMap.keys.max() + 2
 
+        drawMap()
+    }
+
+    private fun part1(): Any {
         var grainsOfSand = 0
         var fallingIntoTheVoid = false
 
@@ -128,13 +130,69 @@ class App : Callable<Int> {
                     break@outerLoop
                 }
             }
-
-            drawMap()
         }
 
         drawMap()
 
         return grainsOfSand
+    }
+
+    private fun part2(): Any {
+        var grainsOfSand = 0
+        var stoppedUp = false
+
+        while (!stoppedUp) {
+            var col = 500
+            var row = 1
+            var cameToRest = false
+
+            while (!cameToRest) {
+                val hitTheFloor = isTheFloor(row)
+
+                if (isOpen(row, col) && !hitTheFloor) {
+                    row++
+                    continue
+                }
+
+                if (hitTheFloor) {
+                    val colMap = theMap.getOrPut(row - 1) { mutableMapOf() }
+                    colMap[col] = SAND
+                    cameToRest = true
+                    grainsOfSand++
+                    break
+                }
+
+                // decide left or right
+                val left = col - 1
+                val right = col + 1
+
+                if (isOpen(row, left)) {
+                    col = left
+                    continue
+                } else if (isOpen(row, right)) {
+                    col = right
+                    continue
+                } else {
+                    if (col == 500 && row == 1) {
+                        stoppedUp = true
+                    }
+
+                    val colMap = theMap.getOrPut(row - 1) { mutableMapOf() }
+                    colMap[col] = SAND
+                    cameToRest = true
+                    grainsOfSand++
+                    break
+                }
+            }
+        }
+
+        drawMap()
+
+        return grainsOfSand
+    }
+
+    private fun isTheFloor(row: Int): Boolean {
+        return row == theFloor
     }
 
     private fun isTheVoid(col: Int): Boolean {
@@ -157,6 +215,7 @@ class App : Callable<Int> {
     }
 
     private fun drawMap() {
+        println("--------------------------------------------")
         val maxRows = theMap.keys.max()
         val minRows = theMap.keys.min()
         val maxCols = theMap.values
@@ -165,8 +224,6 @@ class App : Callable<Int> {
         val minCols = theMap.values
             .flatMap { it.keys }
             .min()
-
-//        println("minCols: $minCols, maxCols: $maxCols, minRows: $minRows, maxRows: $maxRows")
 
         (0..maxRows).forEach { row ->
             (minCols..maxCols).forEach { col ->
@@ -181,11 +238,5 @@ class App : Callable<Int> {
 
             println()
         }
-    }
-
-    private fun part2(lines: List<String>): Any {
-        // part 2 goes here
-
-        return "no result for part 2"
     }
 }
