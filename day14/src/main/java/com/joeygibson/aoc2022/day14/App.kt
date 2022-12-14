@@ -44,7 +44,7 @@ class App : Callable<Int> {
             line.split(" -> ")
                 .map { it.split(",").map(String::toInt) }
                 .windowed(2) { (first, second) ->
-                    println("first: $first, second: $second")
+//                    println("first: $first, second: $second")
                     var startRow = first[1]
                     var endRow = second[1]
                     var startCol = first[0]
@@ -95,12 +95,17 @@ class App : Callable<Int> {
             .flatMap { it.keys }
             .min()
 
-        println("minCols: $minCols, maxCols: $maxCols, minRows: $minRows, maxRows: $maxRows")
+//        println("minCols: $minCols, maxCols: $maxCols, minRows: $minRows, maxRows: $maxRows")
 
         (0 .. maxRows).forEach { row ->
             (minCols .. maxCols).forEach { col ->
                 val value = theMap[row]?.get(col) ?: "."
-                print(value)
+
+                if (row == 0 && col == 500) {
+                    print("+")
+                } else {
+                    print(value)
+                }
             }
 
             println()
