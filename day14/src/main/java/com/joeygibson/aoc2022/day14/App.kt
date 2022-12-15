@@ -35,13 +35,18 @@ class App : Callable<Int> {
 
         createMap(readWithoutBlanks(file))
 
-//        printResults("part1", part1())
+        printResults("part1", part1())
+
+        createMap(readWithoutBlanks(file))
+
         printResults("part2", part2())
 
         return 0
     }
 
     private fun createMap(lines: List<String>) {
+        theMap.clear()
+        
         lines.forEach { line ->
             line.split(" -> ")
                 .map { it.split(",").map(String::toInt) }
