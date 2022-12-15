@@ -2,5 +2,6 @@
 
 DIR=${PWD##*/} 
 
-mvn package && mvn exec:java -Dexec.mainClass=com.joeygibson.aoc2022.${DIR}.MainKt -Dexec.args="$*"
+mvn package && \
+  time mvn exec:java -Dexec.mainClass=com.joeygibson.aoc2022.${DIR}.MainKt -Dexec.args="$*"
 
