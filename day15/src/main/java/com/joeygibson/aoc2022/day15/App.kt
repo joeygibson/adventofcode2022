@@ -120,32 +120,43 @@ class App : Callable<Int> {
             4_000_000
         }
 
-        val excludedCoords = mutableSetOf<Pair<Int, Int>>()
+        val freqMultiplier = 4_000_000
 
-        println("checking sensor ranges")
-        sensorsAndTheirClosestBeaconDistance.forEach { sensorAndDistance ->
-            val sensor = sensorAndDistance.first
-            val dist = sensorAndDistance.second
+        var hitRow = 0
+        var hitCol = 0
 
-            (minCoord..maxCoord).forEach { row ->
-                (minCoord..maxCoord).forEach { col ->
+        outerLoop@ for (row in (minCoord..maxCoord)) {
+            if (row % 1000 == 0) {
+                println("row: $row")
+            }
+
+            val locations = BooleanArray(maxCoord + 1)
+
+            for (col in (minCoord..maxCoord)) {
+                if (locations[col]) {
+                    // already in sensor range
+                    continue
+                }
+
+                for ((sensor, dist) in sensorsAndTheirClosestBeaconDistance) {
                     if (distanceFromThing(sensor, col, row) <= dist) {
-                        excludedCoords.add(Pair(col, row))
+                        locations[col] = true
                     }
                 }
             }
-        }
 
-        println("comparing results")
-        for (row in (minCoord..maxCoord)) {
             for (col in (minCoord..maxCoord)) {
-                if (!excludedCoords.contains(Pair(col, row))) {
-                    return Pair(col, row)
+                if (!locations[col]) {
+                    hitCol = col
+                    hitRow = row
+                    break@outerLoop
                 }
             }
         }
 
-        return "not found"
+        println("hitCol: $hitCol, hitRow: $hitRow")
+
+        return (hitCol * freqMultiplier) + hitRow
     }
 
     private fun drawMap() {
