@@ -39,7 +39,7 @@ class App : Callable<Int> {
 //        drawMap()
 
         printResults("part1", part1(file.name))
-        printResults("part2", part2(lines))
+        printResults("part2", part2(file.name))
 
         return 0
     }
@@ -86,7 +86,7 @@ class App : Callable<Int> {
             val sensor = sensorAndDistance.first
             val dist = sensorAndDistance.second
 
-            (minCol .. maxCol).forEach { col ->
+            (minCol..maxCol).forEach { col ->
                 if (distanceFromThing(sensor, col, rowOfInterest) <= dist) {
                     excludedCols.add(col)
                 }
@@ -112,10 +112,40 @@ class App : Callable<Int> {
         return excludedCols.size
     }
 
-    private fun part2(lines: List<String>): Any {
-        // part 2 goes here
+    private fun part2(fileName: String): Any {
+        val minCoord = 0
+        val maxCoord = if (fileName == "data0.txt") {
+            20
+        } else {
+            4_000_000
+        }
 
-        return "no result for part 2"
+        val excludedCoords = mutableSetOf<Pair<Int, Int>>()
+
+        println("checking sensor ranges")
+        sensorsAndTheirClosestBeaconDistance.forEach { sensorAndDistance ->
+            val sensor = sensorAndDistance.first
+            val dist = sensorAndDistance.second
+
+            (minCoord..maxCoord).forEach { row ->
+                (minCoord..maxCoord).forEach { col ->
+                    if (distanceFromThing(sensor, col, row) <= dist) {
+                        excludedCoords.add(Pair(col, row))
+                    }
+                }
+            }
+        }
+
+        println("comparing results")
+        for (row in (minCoord..maxCoord)) {
+            for (col in (minCoord..maxCoord)) {
+                if (!excludedCoords.contains(Pair(col, row))) {
+                    return Pair(col, row)
+                }
+            }
+        }
+
+        return "not found"
     }
 
     private fun drawMap() {
