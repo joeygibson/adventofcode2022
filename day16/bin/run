@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+DIR=${PWD##*/} 
+
+mvn package && \
+  time mvn exec:java -Dexec.mainClass=com.joeygibson.aoc2022.${DIR}.MainKt -Dexec.args="$*"
+
