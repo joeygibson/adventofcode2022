@@ -25,6 +25,7 @@ class App : Callable<Int> {
     private val beacons = mutableSetOf<Thing>()
     private val sensors = mutableSetOf<Thing>()
     private val sensorsAndTheirClosestBeaconDistance = mutableSetOf<Pair<Thing, Int>>()
+    private val sensorsAndTheirClosestBeacon = mutableSetOf<Pair<Thing, Thing>>()
 
     @Throws(IOException::class)
     override fun call(): Int {
@@ -61,6 +62,8 @@ class App : Callable<Int> {
 
                 val dist = distanceBetweenThings(sensor, beacon)
                 sensorsAndTheirClosestBeaconDistance.add(Pair(sensor, dist))
+
+                sensorsAndTheirClosestBeacon.add(sensor to beacon)
             }
         }
     }
@@ -125,38 +128,24 @@ class App : Callable<Int> {
         var hitRow = 0
         var hitCol = 0
 
-        outerLoop@ for (row in (minCoord..maxCoord)) {
-            if (row % 1000 == 0) {
-                println("row: $row")
-            }
-
-            val locations = BooleanArray(maxCoord + 1)
-
-            for (col in (minCoord..maxCoord)) {
-                if (locations[col]) {
-                    // already in sensor range
-                    continue
+        val answer = sequence {
+            for (y in 0..maxCoord) {
+                val intervals = mutableListOf<IntRange>()
+                for ((sensor, beacon) in sensorsAndTheirClosestBeacon) {
+                    val dx = abs(sensor.col - beacon.col) + abs(sensor.row - beacon.row) - abs(y - sensor.row)
+                    val lo = (sensor.col - dx).coerceAtLeast(0)
+                    val hi = (sensor.col + dx).coerceAtMost(maxCoord)
+                    if (lo <= hi) intervals.addInterval(lo..hi)
                 }
-
-                for ((sensor, dist) in sensorsAndTheirClosestBeaconDistance) {
-                    if (distanceFromThing(sensor, col, row) <= dist) {
-                        locations[col] = true
-                    }
+                val hi = intervals.fold(0) { prev, interval ->
+                    for (x in prev until interval.first) yield(4000000L * x + y)
+                    interval.last + 1
                 }
+                for (x in hi..maxCoord) yield(4000000L * x + y)
             }
+        }.single()
 
-            for (col in (minCoord..maxCoord)) {
-                if (!locations[col]) {
-                    hitCol = col
-                    hitRow = row
-                    break@outerLoop
-                }
-            }
-        }
-
-        println("hitCol: $hitCol, hitRow: $hitRow")
-
-        return (hitCol * freqMultiplier) + hitRow
+        return answer
     }
 
     private fun drawMap() {
@@ -201,4 +190,16 @@ data class Thing(val col: Int, val row: Int, val beacon: Boolean = false) {
         } else {
             "S"
         }
+}
+
+private fun MutableList<IntRange>.addInterval(range: IntRange) {
+    val loIndex = binarySearch { it.last.compareTo(range.first - 1) }.let { it shr 31 xor it }
+    val hiIndex = binarySearch(fromIndex = loIndex) { it.first.compareTo(range.last + 1) }.let { it shr 31 xor it }
+    val mergedRange = if (loIndex < hiIndex) {
+        minOf(this[loIndex].first, range.first)..maxOf(this[hiIndex - 1].last, range.last)
+    } else {
+        range
+    }
+    subList(loIndex, hiIndex).clear()
+    add(loIndex, mergedRange)
 }
