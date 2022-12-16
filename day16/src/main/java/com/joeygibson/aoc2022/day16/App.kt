@@ -70,47 +70,39 @@ class App : Callable<Int> {
     private fun part1(): Any {
         val valvesAtMinute = mutableMapOf<Int, Valve>()
 
-        var lastVisited = aa
         var currentValve = aa
-        var moveTo: Valve? = aa.links.first();
+
+        var lastVisited: Valve? = null
+        var moveTo: Valve? = null
         var minute = 1
 
         while (minute <= 30) {
             if (moveTo != null) {
-                currentValve.links = (currentValve.links.drop(1) + currentValve.links.take(1)).toMutableList()
                 lastVisited = currentValve
+                currentValve.links = currentValve.links.rotate()
                 currentValve = moveTo
                 moveTo = null
+            } else if (currentValve.pressure <= 2) {
+                // nothing to do here; go to next valve
+                var localCv = currentValve.links[0]
+                currentValve.links = currentValve.links.rotate()
+
+                if (localCv.name == lastVisited?.name) {
+                    localCv = currentValve.links[0]
+                    currentValve.links = currentValve.links.rotate()
+                }
+
+                lastVisited = currentValve
+                currentValve = localCv
             } else {
-                if (currentValve.pressure > 2) {
-                    currentValve.open = true
-                    valvesAtMinute[minute] = currentValve
+                currentValve.open = true
+                valvesAtMinute[minute] = currentValve
+                moveTo = currentValve.links.first()
+                currentValve.links = currentValve.links.rotate()
+
+                if (moveTo.name == lastVisited?.name) {
                     moveTo = currentValve.links.first()
-                    currentValve.links = (currentValve.links.drop(1) + currentValve.links.take(1)).toMutableList()
-//                    moveTo = currentValve.links
-//                        .filterNot { it.name == lastVisited.name }
-//                        .firstOrNull()
-//
-//                    if (moveTo == null) {
-//                        moveTo = lastVisited
-//                        deadEnd = true
-//                    } else {
-//                        deadEnd = false
-//                    }
-                } else {
-                    var localMoveTo = currentValve.links
-//                        .filterNot { it.name == lastVisited.name && !deadEnd }
-                        .first()
-
-                    if (lastVisited.name == localMoveTo.name && currentValve.links.size == 1) {
-                        localMoveTo = currentValve.links.first()
-                    }
-
-                    currentValve.links = (currentValve.links.drop(1) + currentValve.links.take(1)).toMutableList()
-
-                    lastVisited = currentValve
-                    currentValve = localMoveTo
-                    moveTo = null
+                    currentValve.links = currentValve.links.rotate()
                 }
             }
 
@@ -119,24 +111,43 @@ class App : Callable<Int> {
             minute++
         }
 
-//        while (minute <= 30) {
-//            if (nextValve != null) {
-//                currentValve = nextValve
+//        var lastVisited = aa
+//        var currentValve = aa
+//        var moveTo: Valve? = aa.links.first();
+//        currentValve.links = currentValve.links.rotate()
+//        var minute = 1
+
+
+//        if (moveTo != null) {
+//            currentValve.links = currentValve.links.rotate()
+//            lastVisited = currentValve
+//            currentValve = moveTo
+//            moveTo = null
+//        } else {
+//            if (currentValve.pressure > 2) {
 //                currentValve.open = true
-//                nextValve = null
 //                valvesAtMinute[minute] = currentValve
+//                moveTo = currentValve.links.first()
+//                if (lastVisited.name == moveTo.name) {
+//                    currentValve.links = currentValve.links.rotate()
+//                    moveTo = currentValve.links.first()
+//                }
+//                currentValve.links = currentValve.links.rotate()
 //            } else {
-//                nextValve = currentValve.links
-//                    .filterNot { currentValve.visited.contains(it.name) }
+//                var localMoveTo = currentValve.links
 //                    .filterNot { it.name == lastVisited.name }
 //                    .first()
 //
-//                currentValve.visited.add(nextValve.name)
-//            }
+//                if (lastVisited.name == localMoveTo.name && currentValve.links.size == 1) {
+//                    localMoveTo = currentValve.links.first()
+//                }
 //
-//            println("min: $minute, current: ${currentValve.name}, next: ${nextValve?.name}, last: ${lastVisited?.name}")
-//            lastVisited = currentValve
-//            minute++
+//                currentValve.links = currentValve.links.rotate()
+//
+//                lastVisited = currentValve
+//                currentValve = localMoveTo
+//                moveTo = null
+//            }
 //        }
 //
         return "no result for part 1"
@@ -155,5 +166,6 @@ data class Valve(
     var open: Boolean = false
 ) {
     var links: MutableList<Valve> = mutableListOf()
-    val visited = mutableListOf<String>()
 }
+
+fun <T> MutableList<T>.rotate(): MutableList<T> = (this.drop(1) + this.take(1)).toMutableList()
