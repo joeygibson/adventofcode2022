@@ -77,7 +77,7 @@ class App : Callable<Int> {
 
         while (minute <= 30) {
             if (moveTo != null) {
-                currentValve.visited.add(moveTo.name)
+                currentValve.links = (currentValve.links.drop(1) + currentValve.links.take(1)).toMutableList()
                 lastVisited = currentValve
                 currentValve = moveTo
                 moveTo = null
@@ -85,21 +85,29 @@ class App : Callable<Int> {
                 if (currentValve.pressure > 2) {
                     currentValve.open = true
                     valvesAtMinute[minute] = currentValve
-
-                    moveTo = currentValve.links
-                        .filterNot { currentValve.visited.contains(it.name) }
-                        .filterNot { it.name == lastVisited.name }
-                        .firstOrNull()
-
-                    if (moveTo == null) {
-                        moveTo = lastVisited
-                    }
+                    moveTo = currentValve.links.first()
+                    currentValve.links = (currentValve.links.drop(1) + currentValve.links.take(1)).toMutableList()
+//                    moveTo = currentValve.links
+//                        .filterNot { it.name == lastVisited.name }
+//                        .firstOrNull()
+//
+//                    if (moveTo == null) {
+//                        moveTo = lastVisited
+//                        deadEnd = true
+//                    } else {
+//                        deadEnd = false
+//                    }
                 } else {
-                    val localMoveTo = currentValve.links
-//                        .filterNot { currentValve.visited.contains(it.name) }
-                        .filterNot { it.name == lastVisited.name }
+                    var localMoveTo = currentValve.links
+//                        .filterNot { it.name == lastVisited.name && !deadEnd }
                         .first()
-                    currentValve.visited.add(localMoveTo.name)
+
+                    if (lastVisited.name == localMoveTo.name && currentValve.links.size == 1) {
+                        localMoveTo = currentValve.links.first()
+                    }
+
+                    currentValve.links = (currentValve.links.drop(1) + currentValve.links.take(1)).toMutableList()
+
                     lastVisited = currentValve
                     currentValve = localMoveTo
                     moveTo = null
