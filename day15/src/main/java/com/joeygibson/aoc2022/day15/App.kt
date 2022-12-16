@@ -24,7 +24,7 @@ class App : Callable<Int> {
     private val theMap = mutableMapOf<Int, MutableMap<Int, Thing>>().withDefault { mutableMapOf() }
     private val beacons = mutableSetOf<Thing>()
     private val sensors = mutableSetOf<Thing>()
-    private val sensorsAndTheirClosesBeaconDistance = mutableSetOf<Pair<Thing, Int>>()
+    private val sensorsAndTheirClosestBeaconDistance = mutableSetOf<Pair<Thing, Int>>()
 
     @Throws(IOException::class)
     override fun call(): Int {
@@ -60,38 +60,33 @@ class App : Callable<Int> {
                 beacons.add(beacon)
 
                 val dist = distanceBetweenThings(sensor, beacon)
-                sensorsAndTheirClosesBeaconDistance.add(Pair(sensor, dist))
+                sensorsAndTheirClosestBeaconDistance.add(Pair(sensor, dist))
             }
         }
     }
 
     private fun part1(fileName: String): Any {
-        // max cols: 4355287
-        // too low: 4344721
-        println("fileName: $fileName")
         val rowOfInterest = if (fileName == "data1.txt") {
             2000000
         } else {
             10
         }
 
-        println("rowOfInterest: $rowOfInterest")
-
         val minSensorCol = sensors.minOf { it.col }
         val maxSensorCol = sensors.maxOf { it.col }
         val minBeaconCol = beacons.minOf { it.col }
         val maxBeaconCol = beacons.maxOf { it.col }
 
-        val minCol = min(minSensorCol, minBeaconCol)
-        val maxCol = max(maxSensorCol, maxBeaconCol)
+        val minCol = min(minSensorCol, minBeaconCol) - 5_000_000
+        val maxCol = max(maxSensorCol, maxBeaconCol) + 5_000_000
 
         val excludedCols = mutableSetOf<Int>()
 
-        for (col in (minCol..maxCol)) {
-            for (s in sensorsAndTheirClosesBeaconDistance) {
-                val sensor = s.first
-                val dist = s.second
+        sensorsAndTheirClosestBeaconDistance.forEach { sensorAndDistance ->
+            val sensor = sensorAndDistance.first
+            val dist = sensorAndDistance.second
 
+            (minCol .. maxCol).forEach { col ->
                 if (distanceFromThing(sensor, col, rowOfInterest) <= dist) {
                     excludedCols.add(col)
                 }
@@ -114,9 +109,7 @@ class App : Callable<Int> {
             excludedCols.remove(col)
         }
 
-        println("excludedCols: ${excludedCols.size}")
-
-        return "fuck, man, I don't know"
+        return excludedCols.size
     }
 
     private fun part2(lines: List<String>): Any {
