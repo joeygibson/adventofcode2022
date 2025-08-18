@@ -17,3 +17,14 @@ AoCDay01 >> part1: lines [
 	^ (elfManifests collect: [ :group |
 		   (group collect: [ :calories | calories asInteger ]) sum ]) max
 ]
+
+{ #category : 'as yet unclassified' }
+AoCDay01 >> part2: lines [
+
+	| elfManifests elfTotals |
+	elfManifests := lines splitOn: [ :line | line isEmpty ].
+	elfTotals := elfManifests collect: [ :group |
+		             (group collect: [ :calories | calories asInteger ]) sum ].
+
+	^ ((elfTotals sorted: [ :a :b | a > b ]) takeFirst: 3) sum
+]
