@@ -18,7 +18,23 @@ AoCDay03 >> part1: lines [
 
 			   inter := firstHalf intersection: secondHalf.
 
-			   inter first isUppercase
-				   ifTrue: [ inter first asInteger - 38 ]
-				   ifFalse: [ inter first asInteger - 96 ] ]) sum
+			   self prioritize: inter ]) sum
+]
+
+{ #category : 'as yet unclassified' }
+AoCDay03 >> part2: lines [
+
+	^ ((lines groupsOf: 3) collect: [ :group |
+			   | inter |
+			   inter := group first intersection:
+				            (group second intersection: group third).
+			   self prioritize: inter ]) sum
+]
+
+{ #category : 'as yet unclassified' }
+AoCDay03 >> prioritize: aChar [
+
+	^ aChar first isUppercase
+		  ifTrue: [ aChar first asInteger - 38 ]
+		  ifFalse: [ aChar first asInteger - 96 ]
 ]
