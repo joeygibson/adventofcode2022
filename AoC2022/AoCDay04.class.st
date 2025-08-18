@@ -28,3 +28,24 @@ AoCDay04 >> part1: lines [
 
 	^ res size
 ]
+
+{ #category : 'as yet unclassified' }
+AoCDay04 >> part2: lines [
+
+	| res |
+	res := lines select: [ :line |
+			       | pairs left right leftSeq rightSeq |
+			       pairs := line substrings: ','.
+			       left := (pairs first substrings: '-') collect: [ :c |
+				               c asInteger ].
+			       right := (pairs second substrings: '-') collect: [ :c |
+				                c asInteger ].
+
+			       leftSeq := left first to: left second.
+			       rightSeq := right first to: right second.
+
+			       (leftSeq includesAny: rightSeq) or: [
+				       rightSeq includesAny: leftSeq ] ].
+
+	^ res size
+]
