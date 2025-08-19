@@ -11,17 +11,33 @@ Class {
 { #category : 'as yet unclassified' }
 AoCDay06 >> part1: lines [
 
-	| input charCounts chars |
+	| input |
+	input := lines first.
+
+	^ self processLine: input markerChars: 4
+]
+
+{ #category : 'as yet unclassified' }
+AoCDay06 >> part2: lines [
+
+	| input |
+	input := lines first.
+
+	^ self processLine: input markerChars: 14
+]
+
+{ #category : 'as yet unclassified' }
+AoCDay06 >> processLine: line markerChars: markerChars [
+
+	| charCounts chars |
 	charCounts := Dictionary new.
 	chars := OrderedCollection new.
 
-	input := lines first.
-
-	input doWithIndex: [ :c :index |
+	line doWithIndex: [ :c :index |
 			chars add: c.
 			charCounts at: c update: [ :v | v + 1 ] initial: [ 1 ].
 
-			chars size = 4 ifTrue: [
+			chars size = markerChars ifTrue: [
 					(charCounts values allSatisfy: [ :v | v = 1 ])
 						ifTrue: [ ^ index ]
 						ifFalse: [
