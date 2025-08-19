@@ -58,3 +58,27 @@ AoCDay05 >> part1: lines [
 	^ (stacks keys sorted collect: [ :stackNum |
 		   (stacks at: stackNum) removeLast ]) joinUsing: ''
 ]
+
+{ #category : 'as yet unclassified' }
+AoCDay05 >> part2: lines [
+
+	| stacks sections |
+	sections := lines splitOn: [ :line | line isEmpty ].
+
+	stacks := self buildStacks: sections first.
+
+	sections second do: [ :line |
+			| nums from to count boxes |
+			nums := '\d+' asRegex matchesIn: line collect: [ :c | c asInteger ].
+			from := stacks at: nums second.
+			to := stacks at: nums third.
+			count := nums first.
+
+			boxes := from removeLast: count.
+			to addAll: boxes ].
+
+	^ (stacks keys sorted collect: [ :stackNum |
+			   | stack |
+			   stack := stacks at: stackNum.
+			   stack isEmpty ifFalse: [ stack removeLast ] ]) joinUsing: ''
+]
