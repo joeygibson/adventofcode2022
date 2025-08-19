@@ -1,0 +1,17 @@
+"
+Please describe the package using the class comment of the included manifest class. The manifest class also includes other additional metadata for the package. These meta data are used by other tools such as the SmalllintManifestChecker and the critics Browser
+"
+Class {
+	#name : 'ManifestAoC2022',
+	#superclass : 'PackageManifest',
+	#category : 'AoC2022-Manifest',
+	#package : 'AoC2022',
+	#tag : 'Manifest'
+}
+
+{ #category : 'code-critics' }
+ManifestAoC2022 class >> rulePrecedenceRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGMethodDefinition #(#AoCDay05 #part1: #false)) #'2025-08-18T22:47:39.516776-04:00') )
+]
