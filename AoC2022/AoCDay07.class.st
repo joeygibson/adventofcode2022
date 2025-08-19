@@ -87,6 +87,23 @@ AoCDay07 >> part1: lines [
 ]
 
 { #category : 'as yet unclassified' }
+AoCDay07 >> part2: lines [
+
+	| dirs biggest root targetSize |
+	self parse: lines.
+
+	dirs := self walkDir: drive isRoot: true.
+
+	root := (dirs sort: [ :a :b | b second < a second ]) first.
+	targetSize := 70000000 - root second.
+
+	biggest := (dirs sort: [ :a :b | a second < b second ]) findFirst: [
+		           :item | item second >= targetSize ].
+
+	^ (dirs at: biggest) second
+]
+
+{ #category : 'as yet unclassified' }
 AoCDay07 >> walkDir: dir [
 
 	| res total |
@@ -99,6 +116,26 @@ AoCDay07 >> walkDir: dir [
 				ifFalse: [ total := total + value ] ].
 
 	res do: [ :item | total := total + item second ].
+	res add: (OrderedCollection with: dir with: total).
+
+	^ res
+]
+
+{ #category : 'as yet unclassified' }
+AoCDay07 >> walkDir: dir isRoot: isRoot [
+
+	| res total |
+	res := OrderedCollection new.
+	total := 0.
+
+	dir keysAndValuesDo: [ :name :value |
+			value isDictionary
+				ifTrue: [ res addAll: (self walkDir: value isRoot: false) ]
+				ifFalse: [ total := total + value ] ].
+
+	res do: [ :item | total := total + item second ].
+
+	isRoot ifFalse: [ res removeAll ].
 
 	res add: (OrderedCollection with: dir with: total).
 
