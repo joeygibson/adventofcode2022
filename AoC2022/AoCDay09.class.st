@@ -44,3 +44,35 @@ AoCDay09 >> part1: lines [
 
 	^ visited size
 ]
+
+{ #category : 'as yet unclassified' }
+AoCDay09 >> part2: lines [
+
+	| visited knots |
+	knots := ((1 to: 10) collect: [ :i | 0 @ 0 ]) asOrderedCollection.
+
+	visited := Set with: 0 @ 0.
+
+	lines do: [ :line |
+			| chunks dir steps |
+			chunks := line substrings.
+			dir := chunks first.
+			steps := chunks second asInteger.
+
+			steps timesRepeat: [
+					(1 to: 10) overlappingPairsDo: [ :h :t |
+							| head tail tmp |
+							head := knots at: h.
+							tail := knots at: t.
+
+							tmp := head.
+							head := head + (self computeStepFrom: head direction: dir).
+							knots at: h put: head.
+
+							(head = tail or: [ head eightNeighbors includes: tail ])
+								ifFalse: [
+										knots at: t put: tmp.
+										t = 10 ifTrue: [ visited add: tmp ] ] ] ] ].
+
+	^ visited size
+]
