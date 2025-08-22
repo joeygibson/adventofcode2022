@@ -30,11 +30,13 @@ AoCDay11 >> part1: lines [
 { #category : 'as yet unclassified' }
 AoCDay11 >> part2: lines [
 
-	| sortedMonkeys |
+	| sortedMonkeys worryReducer |
 	self populateMonkeys: lines.
 
+	worryReducer := monkeys inject: 1 into: [ :total :monkey | monkey divisor * total ].
+
 	10000 timesRepeat: [
-		monkeys do: [ :monkey | monkey takeTurn: false ] ].
+		monkeys do: [ :monkey | monkey takeTurn: worryReducer ] ].
 
 
 	sortedMonkeys := monkeys sorted: [ :a :b |

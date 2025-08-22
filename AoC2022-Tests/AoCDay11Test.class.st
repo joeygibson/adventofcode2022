@@ -64,8 +64,6 @@ AoCDay11Test >> testPart2WithSample [
 		         readInputFileAsLines: 'input0.txt'
 		         for: self day
 		         onPath: self path.
-
-	self increaseTimeout: 600.
 	
 	res := inst part2: lines.
 
