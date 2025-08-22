@@ -15,3 +15,10 @@ ManifestAoC2022 class >> rulePrecedenceRuleV1FalsePositive [
 	<ignoreForCoverage>
 	^ #(#(#(#RGMethodDefinition #(#AoCDay05 #part1: #false)) #'2025-08-18T22:47:39.516776-04:00') )
 ]
+
+{ #category : 'code-critics' }
+ManifestAoC2022 class >> ruleToDoWithIncrementRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGMethodDefinition #(#AoCDay10 #part1: #false)) #'2025-08-21T22:35:28.15258-04:00') )
+]
