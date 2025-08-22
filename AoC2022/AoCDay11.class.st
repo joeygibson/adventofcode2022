@@ -28,6 +28,23 @@ AoCDay11 >> part1: lines [
 ]
 
 { #category : 'as yet unclassified' }
+AoCDay11 >> part2: lines [
+
+	| sortedMonkeys |
+	self populateMonkeys: lines.
+
+	10000 timesRepeat: [
+		monkeys do: [ :monkey | monkey takeTurn: false ] ].
+
+
+	sortedMonkeys := monkeys sorted: [ :a :b |
+		                 b inspectionCount < a inspectionCount ].
+
+	^ sortedMonkeys first inspectionCount
+	  * sortedMonkeys second inspectionCount
+]
+
+{ #category : 'as yet unclassified' }
 AoCDay11 >> populateMonkeys: lines [
 
 	| sections |
