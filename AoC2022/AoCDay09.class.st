@@ -50,7 +50,6 @@ AoCDay09 >> part2: lines [
 
 	| visited knots |
 	knots := ((1 to: 10) collect: [ :i | 0 @ 0 ]) asOrderedCollection.
-
 	visited := Set with: 0 @ 0.
 
 	lines do: [ :line |
@@ -60,19 +59,32 @@ AoCDay09 >> part2: lines [
 			steps := chunks second asInteger.
 
 			steps timesRepeat: [
-					(1 to: 10) overlappingPairsDo: [ :h :t |
-							| head tail tmp |
-							head := knots at: h.
-							tail := knots at: t.
+					| knot |
+					knot := knots first.
+					knot := knot + (self computeStepFrom: knot direction: dir).
+					knots at: 1 put: knot.
 
-							tmp := head.
-							head := head + (self computeStepFrom: head direction: dir).
-							knots at: h put: head.
+					2 to: 10 do: [ :i |
+							| prev cur |
+							prev := knots at: i - 1.
+							cur := knots at: i.
 
-							(head = tail or: [ head eightNeighbors includes: tail ])
-								ifFalse: [
-										knots at: t put: tmp.
-										t = 10 ifTrue: [ visited add: tmp ] ] ] ] ].
+							(cur euclideanDistanceTo: prev) > 1 ifTrue: [
+									| xDiff yDiff oldPos |
+									xDiff := prev x - cur x.
+									yDiff := prev y - cur y.
+
+									xDiff = 2 ifTrue: [ xDiff := 1 ].
+									xDiff = -2 ifTrue: [ xDiff := -1 ].
+									yDiff = 2 ifTrue: [ yDiff := 1 ].
+									yDiff = -2 ifTrue: [ yDiff := -1 ].
+
+									oldPos := cur.
+
+									cur := cur + (xDiff @ yDiff).
+									knots at: i put: cur.
+
+									i = 10 ifTrue: [ visited add: cur ] ] ] ] ].
 
 	^ visited size
 ]
