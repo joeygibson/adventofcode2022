@@ -17,6 +17,13 @@ ManifestAoC2022 class >> rulePrecedenceRuleV1FalsePositive [
 ]
 
 { #category : 'code-critics' }
+ManifestAoC2022 class >> ruleTempVarOverridesInstVarRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGMethodDefinition #(#AoCDay12 #part2: #false)) #'2025-08-22T15:55:32.409682-04:00') )
+]
+
+{ #category : 'code-critics' }
 ManifestAoC2022 class >> ruleToDoWithIncrementRuleV1FalsePositive [
 
 	<ignoreForCoverage>
