@@ -53,3 +53,23 @@ AoCDay13 >> part1: lines [
 
 	^ result
 ]
+
+{ #category : 'as yet unclassified' }
+AoCDay13 >> part2: lines [
+
+	| filteredLines sortedPackets |
+	filteredLines := ((lines select: [ :line | line isNotEmpty ])
+		                  collect: [ :line | STONJSON fromString: line ])
+		                 asOrderedCollection.
+
+	filteredLines add: { { 2 } }.
+	filteredLines add: { { 6 } }.
+
+	sortedPackets := filteredLines sorted: [ :a :b |
+			                 | res |
+			                 res := self compare: a with: b.
+
+			                 res = #lt or: res = #eq ].
+
+	^ (sortedPackets find: { { 2 } }) * (sortedPackets find: { { 6 } })
+]
