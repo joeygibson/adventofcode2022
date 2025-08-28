@@ -10,10 +10,24 @@ Class {
 }
 
 { #category : 'code-critics' }
+ManifestAoC2022 class >> ruleEmptyExceptionHandlerRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGMethodDefinition #(#AoCDay14 #part1: #false)) #'2025-08-27T21:15:58.683933-04:00') )
+]
+
+{ #category : 'code-critics' }
 ManifestAoC2022 class >> rulePrecedenceRuleV1FalsePositive [
 
 	<ignoreForCoverage>
 	^ #(#(#(#RGMethodDefinition #(#AoCDay05 #part1: #false)) #'2025-08-18T22:47:39.516776-04:00') )
+]
+
+{ #category : 'code-critics' }
+ManifestAoC2022 class >> ruleReCyclomaticComplexityRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGMethodDefinition #(#AoCDay14 #part1: #false)) #'2025-08-27T21:32:30.75687-04:00') )
 ]
 
 { #category : 'code-critics' }
