@@ -92,35 +92,31 @@ AoCDay14 >> part1: lines [
 			col := 500 - widthDiff.
 			row := 1.
 
-			[
-				[ cameToRest ] whileFalse: [ "check if this column is the void"
-						(self isTheVoid: col @ row) ifTrue: [ ^ grains ].
+			[ cameToRest ] whileFalse: [ "check if this column is the void"
+					(self isTheVoid: col) ifTrue: [ ^ grains ].
 
-						"now, check that the spot is open"
-						(self isOpen: col @ row)
-							ifTrue: [ row := row + 1 ]
-							ifFalse: [
-									| left right |
-									left := col - 1.
-									right := col + 1.
+					"now, check that the spot is open"
+					(self isOpen: col @ row)
+						ifTrue: [ row := row + 1 ]
+						ifFalse: [
+								| left right |
+								left := col - 1.
+								right := col + 1.
 
-									"is the left column the void?"
-									(self isTheVoid: left @ row) ifTrue: [ ^ grains ].
+								"is the left column the void?"
+								(self isTheVoid: left) ifTrue: [ ^ grains ].
 
-									"is the left column open"
-									(self isOpen: col @ row)
-										ifTrue: [ row := row + 1 ]
-										ifFalse: [ "is the right column the void?"
-												(self isTheVoid: right @ row) ifTrue: [ ^ grains ].
+								"is the left column open"
+								(self isOpen: col @ row)
+									ifTrue: [ row := row + 1 ]
+									ifFalse: [ "is the right column the void?"
+											(self isTheVoid: right) ifTrue: [ ^ grains ].
 
-												"is the right column open"
-												(self isOpen: right @ row)
-													ifTrue: [ row := row + 1 ]
-													ifFalse: [
-															map at: col @ row put: 'o'.
-															cameToRest := true.
-															grains := grains + 1.
-															Exception signal ] ] ] ] ]
-				on: Exception
-				do: [ "continue outer loop" ] ]
+											"is the right column open"
+											(self isOpen: right @ row)
+												ifTrue: [ row := row + 1 ]
+												ifFalse: [
+														map at: col @ row put: 'o'.
+														cameToRest := true.
+														grains := grains + 1 ] ] ] ] ]
 ]
