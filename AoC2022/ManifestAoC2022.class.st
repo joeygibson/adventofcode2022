@@ -10,6 +10,13 @@ Class {
 }
 
 { #category : 'code-critics' }
+ManifestAoC2022 class >> ruleCollectionProtocolRuleV1FalsePositive [
+
+	<ignoreForCoverage>
+	^ #(#(#(#RGMethodDefinition #(#AoCDay15 #createMap: #false)) #'2025-08-28T23:20:43.737865-04:00') )
+]
+
+{ #category : 'code-critics' }
 ManifestAoC2022 class >> ruleEmptyExceptionHandlerRuleV1FalsePositive [
 
 	<ignoreForCoverage>
