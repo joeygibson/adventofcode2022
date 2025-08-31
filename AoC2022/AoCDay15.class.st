@@ -80,3 +80,43 @@ AoCDay15 >> part1: lines rowOfInterest: rowOfInterest [
 
 	^ excludedCols size
 ]
+
+{ #category : 'as yet unclassified' }
+AoCDay15 >> part2: lines maxCoord: maxCoord [
+
+	| hitRow hitCol next result freqMultiplier |
+	self createMap: lines.
+
+	freqMultiplier := 4000000.
+	hitCol := 0.
+	hitRow := 0.
+	result := OrderedCollection new.
+
+	0 to: maxCoord do: [ :y |
+			| intervals hi |
+			intervals := OrderedCollection new.
+
+			sensorsAndClosestBeacons do: [ :sensorAndBeacon |
+					| sensor beacon dx lo |
+					sensor := sensorAndBeacon key.
+					beacon := sensorAndBeacon value.
+
+					dx := (sensor coords x - beacon coords x) abs
+					      + (sensor coords y - beacon coords y) abs
+					      - (y - sensor coords y).
+					lo := sensor coords x - dx min: 0.
+					hi := sensor coords x + dx min: maxCoord.
+
+					lo <= hi ifTrue: [ intervals add: (lo to: hi) ] ].
+
+			next := 0.
+			intervals do: [ :interval |
+					next to: interval first - 1 do: [ :x |
+					result add: freqMultiplier * x + y ].
+					next := interval last + 1 ].
+			next to: maxCoord do: [ :x | result add: freqMultiplier * x + y ] ].
+
+	^ result size = 1
+		  ifTrue: [ result first ]
+		  ifFalse: [ result ]
+]

@@ -54,9 +54,9 @@ AoCDay15Test >> testPart2WithRealData [
 		         for: self day
 		         onPath: self path.
 
-	res := inst part2: lines.
+	res := inst part2: lines maxCoord: 4000000.
 
-	self assert: res equals: 0.
+	self assert: res equals: 12413999391794.
 		
 ]
 
@@ -69,8 +69,8 @@ AoCDay15Test >> testPart2WithSample [
 		         for: self day
 		         onPath: self path.
 
-	res := inst part2: lines.
+	res := inst part2: lines maxCoord: 20.
 
-	self assert: res equals: 0.
+	self assert: res equals: 56000011.
 		
 ]
