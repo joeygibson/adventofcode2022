@@ -14,6 +14,21 @@ Class {
 }
 
 { #category : 'as yet unclassified' }
+AoCDay16 >> allSubsetsOf: collection do: aBlock [
+	"Generate all subsets of a collection and evaluate aBlock for each"
+
+	| size |
+	size := collection size.
+	0 to: (2 raisedTo: size) - 1 do: [ :i |
+			| subset |
+			subset := OrderedCollection new.
+			1 to: size do: [ :j |
+					(i bitAnd: (2 raisedTo: j - 1)) ~= 0 ifTrue: [
+						subset add: (collection at: j) ] ].
+			aBlock value: subset ]
+]
+
+{ #category : 'as yet unclassified' }
 AoCDay16 >> calculateDistances [
 	"Calculate shortest distances between all pairs of valves using Floyd-Warshall"
 
@@ -133,6 +148,54 @@ AoCDay16 >> part1: lines [
 		  openedValves: Set new
 		  positiveFlowValves: positiveFlowValves
 		  memo: memo
+]
+
+{ #category : 'as yet unclassified' }
+AoCDay16 >> part2: lines [
+	"Find maximum pressure release in 26 minutes with elephant helper"
+
+	| positiveFlowValves maxPressure |
+	self createGraph: lines.
+	self calculateDistances.
+	positiveFlowValves := self valvesWithPositiveFlow.
+	maxPressure := 0.
+
+	"Try all possible ways to split valves between human and elephant"
+	self allSubsetsOf: positiveFlowValves do: [ :humanValves |
+			| elephantValves humanPressure elephantPressure totalPressure humanMemo elephantMemo |
+			elephantValves := positiveFlowValves reject: [ :valve |
+				                  humanValves includes: valve ].
+
+			"Use separate memo tables for human and elephant"
+			humanMemo := Dictionary new.
+			elephantMemo := Dictionary new.
+
+			"Calculate pressure for human with their subset"
+			humanPressure := humanValves isEmpty
+				                 ifTrue: [ 0 ]
+				                 ifFalse: [
+						                 self
+							                 dfsMaxPressure: 'AA'
+							                 timeRemaining: 26
+							                 openedValves: Set new
+							                 positiveFlowValves: humanValves
+							                 memo: humanMemo ].
+
+			"Calculate pressure for elephant with remaining valves"
+			elephantPressure := elephantValves isEmpty
+				                    ifTrue: [ 0 ]
+				                    ifFalse: [
+						                    self
+							                    dfsMaxPressure: 'AA'
+							                    timeRemaining: 26
+							                    openedValves: Set new
+							                    positiveFlowValves: elephantValves
+							                    memo: elephantMemo ].
+
+			totalPressure := humanPressure + elephantPressure.
+			maxPressure := maxPressure max: totalPressure ].
+
+	^ maxPressure
 ]
 
 { #category : 'as yet unclassified' }
